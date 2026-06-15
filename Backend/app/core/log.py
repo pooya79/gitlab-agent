@@ -15,6 +15,19 @@ LEVEL_COLORS = {
 }
 
 
+class DowngradeOTLPExportErrors(logging.Filter):
+    """Logfire/OpenTelemetry exporters log every failed batch export at ERROR
+    (e.g. ``Failed to export metrics batch code: 401, reason: Unknown token``
+    when the token is missing/invalid). Monitoring is optional, so downgrade
+    these to WARNING to avoid spamming the logs with errors."""
+
+    def filter(self, record):
+        if record.name.startswith("opentelemetry") and record.levelno >= logging.ERROR:
+            record.levelno = logging.WARNING
+            record.levelname = "WARNING"
+        return True
+
+
 class ColorFormatter(logging.Formatter):
     def format(self, record):
         log_color = LEVEL_COLORS.get(record.levelname, "")
@@ -37,6 +50,7 @@ def setup_logger():
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(logging.DEBUG)
     console_handler.setFormatter(ColorFormatter())
+    console_handler.addFilter(DowngradeOTLPExportErrors())
 
     # Clear old handlers (avoid duplicate logs if imported twice)
     if logger.hasHandlers():

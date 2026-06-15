@@ -31,11 +31,18 @@ app = FastAPI(
     openapi_url="/api/openapi.json",
 )
 
-# Setup logfire for monitoring
+# Setup logfire for monitoring (optional — only when a token is provided)
 if settings.logfire_token:
-    logfire.configure(token=settings.logfire_token)
-    logfire.instrument_pydantic_ai()
-    logfire.instrument_fastapi(app, capture_headers=True)
+    try:
+        logfire.configure(token=settings.logfire_token)
+        logfire.instrument_pydantic_ai()
+        logfire.instrument_fastapi(app, capture_headers=True)
+    except Exception as exc:  # pragma: no cover - defensive, monitoring is optional
+        logger.warning(f"Logfire configuration failed; monitoring disabled: {exc}")
+else:
+    # Don't let logfire/OpenTelemetry attempt to export anything without a token.
+    logger.warning("LOGFIRE_TOKEN not set; Logfire monitoring is disabled.")
+    logfire.configure(send_to_logfire=False)
 
 ASSETS_DIR = Path(__file__).resolve().parent / "assets"
 AVATARS_DIR = ASSETS_DIR / "avatars"
