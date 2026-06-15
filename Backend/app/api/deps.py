@@ -14,6 +14,7 @@ from app.core.log import logger
 from app.core.time import ensure_utc, utc_now
 from app.db.database import get_mongo_database
 from app.db.models import OAuthAccount, Users
+from app.services.app_settings_service import get_app_settings
 
 security = HTTPBearer(auto_error=True)
 
@@ -75,6 +76,61 @@ async def get_current_user(
     return user
 
 
+async def get_current_admin(
+    mongo_db: Database = Depends(get_mongo_database),
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+) -> Users:
+    """
+    Dependency for admin-only endpoints. Validates the JWT and its session like
+    ``get_current_user``, but additionally requires the ``is_admin`` token claim
+    and a superuser account.
+    Usage: async def endpoint(admin: Users = Depends(get_current_admin))
+    """
+    token = credentials.credentials
+    try:
+        payload = decode_token(token)
+    except Exception as exc:
+        logger.info(f"Error decoding admin token: {exc}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials",
+        ) from exc
+
+    user_id = payload.get("sub")
+    jti = payload.get("jti")
+    if user_id is None or jti is None or payload.get("is_admin") is not True:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin privileges required",
+        )
+
+    refresh_session = mongo_db["refresh_sessions"].find_one({"jti": jti})
+    expires_at = (
+        ensure_utc(refresh_session.get("expires_at")) if refresh_session else None
+    )
+    if not refresh_session or not expires_at or expires_at <= _utcnow():
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Session expired or revoked",
+        )
+
+    try:
+        user_doc = mongo_db["users"].find_one({"id": int(user_id)})
+    except (TypeError, ValueError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials",
+        )
+
+    user = Users.from_document(user_doc)
+    if user is None or not user.is_superuser:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin privileges required",
+        )
+    return user
+
+
 async def get_gitlab_client(
     mongo_db: Database = Depends(get_mongo_database),
     current_user: Users = Depends(get_current_user),
@@ -100,7 +156,7 @@ async def get_gitlab_client(
     if account_expires_at and account_expires_at <= _utcnow():
         async with httpx.AsyncClient() as client:
             try:
-                gitlab_oauth = GitlabAuthService()
+                gitlab_oauth = GitlabAuthService.from_db(mongo_db)
                 token_response = await gitlab_oauth.refresh_token(
                     client=client,
                     refresh_token=oauth_account.refresh_token,
@@ -138,4 +194,5 @@ async def get_gitlab_client(
 
         oauth_account.access_token = update_doc["access_token"]
 
-    return gitlab.Gitlab(settings.gitlab.base, oauth_token=oauth_account.access_token)
+    gitlab_base = get_app_settings(mongo_db).gitlab_base
+    return gitlab.Gitlab(gitlab_base, oauth_token=oauth_account.access_token)

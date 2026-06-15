@@ -2,11 +2,15 @@ DEV_COMPOSE  := docker/docker-compose.yml
 PROD_COMPOSE := docker/docker-compose-all.yml
 ENV_FILE     := .env
 
+# Local dev backend port (override: make dev BACKEND_PORT=8001). The frontend
+# is pointed at this port via NEXT_PUBLIC_BACKEND_URL so its API calls follow.
+BACKEND_PORT ?= 8000
+
 # Compose resolves its project directory (and thus auto-loads .env) from the
 # compose file's folder (docker/), so point it at the repo-root .env explicitly.
 COMPOSE      := docker compose --env-file $(ENV_FILE)
 
-.PHONY: help dev prod down-dev down-prod down clean-dev clean-prod clean
+.PHONY: help dev prod create-admin down-dev down-prod down clean-dev clean-prod clean
 
 .DEFAULT_GOAL := help
 
@@ -18,15 +22,18 @@ help: ## Show this help
 
 dev: ## Run mongodb in Docker; run backend + frontend locally with hot-reload
 	$(COMPOSE) -f $(DEV_COMPOSE) up -d
-	@echo "MongoDB is up in Docker. Starting local backend (:8000) + frontend (:3000)..."
+	@echo "MongoDB is up in Docker. Starting local backend (:$(BACKEND_PORT)) + frontend (:3000)..."
 	@cd Frontend && npm install
 	@trap 'kill 0' INT TERM EXIT; \
-		( cd Backend && MONGODB_HOST=localhost uv run uvicorn app.main:app --reload --port 8000 --env-file ../.env ) & \
-		( cd Frontend && npm run dev ) & \
+		( cd Backend && MONGODB_HOST=localhost uv run uvicorn app.main:app --reload --port $(BACKEND_PORT) --env-file ../.env ) & \
+		( cd Frontend && NEXT_PUBLIC_BACKEND_URL=http://localhost:$(BACKEND_PORT) npm run dev ) & \
 		wait
 
 prod: ## Run the full prod stack (traefik + backend + frontend + mongodb)
 	$(COMPOSE) -f $(PROD_COMPOSE) up --build -d
+
+create-admin: ## Create/update the admin user (uses ADMIN_* from .env; or pass ARGS="--username ... --email ... --password ...")
+	cd Backend && MONGODB_HOST=localhost uv run --env-file ../.env python -m scripts.create_admin $(ARGS)
 
 # --- Stop ------------------------------------------------------------------
 

@@ -5,6 +5,64 @@ export type ClientOptions = {
 };
 
 /**
+ * AdminInfo
+ */
+export type AdminInfo = {
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Email
+     */
+    email: string;
+    /**
+     * Username
+     */
+    username: string | null;
+    /**
+     * Is Superuser
+     */
+    is_superuser: boolean;
+};
+
+/**
+ * AdminLoginIn
+ */
+export type AdminLoginIn = {
+    /**
+     * Username
+     */
+    username: string;
+    /**
+     * Password
+     */
+    password: string;
+};
+
+/**
+ * AdminTokenOut
+ */
+export type AdminTokenOut = {
+    /**
+     * Access Token
+     */
+    access_token: string;
+    /**
+     * Refresh Token
+     */
+    refresh_token: string;
+    /**
+     * Token Type
+     */
+    token_type?: string;
+    /**
+     * Expires In
+     */
+    expires_in: number;
+};
+
+/**
  * BotCreate
  */
 export type BotCreate = {
@@ -128,7 +186,7 @@ export type BotStatusResponse = {
     /**
      * Status
      */
-    status: "ACTIVE" | "STOPPED" | "ERROR";
+    status: 'ACTIVE' | 'STOPPED' | 'ERROR';
     /**
      * Error Message
      */
@@ -297,6 +355,50 @@ export type GitlabProject = {
 };
 
 /**
+ * GitlabSettingsOut
+ */
+export type GitlabSettingsOut = {
+    /**
+     * Gitlab Base
+     */
+    gitlab_base: string | null;
+    /**
+     * Gitlab Client Id
+     */
+    gitlab_client_id: string | null;
+    /**
+     * Gitlab Client Secret Set
+     */
+    gitlab_client_secret_set: boolean;
+    /**
+     * Gitlab Webhook Ssl Verify
+     */
+    gitlab_webhook_ssl_verify: boolean;
+};
+
+/**
+ * GitlabSettingsUpdate
+ */
+export type GitlabSettingsUpdate = {
+    /**
+     * Gitlab Base
+     */
+    gitlab_base?: string | null;
+    /**
+     * Gitlab Client Id
+     */
+    gitlab_client_id?: string | null;
+    /**
+     * Gitlab Client Secret
+     */
+    gitlab_client_secret?: string | null;
+    /**
+     * Gitlab Webhook Ssl Verify
+     */
+    gitlab_webhook_ssl_verify?: boolean | null;
+};
+
+/**
  * HTTPValidationError
  */
 export type HttpValidationError = {
@@ -444,7 +546,7 @@ export type RefreshTokenApiV1AuthRefreshPostData = {
     body: RefreshTokenIn;
     path?: never;
     query?: never;
-    url: "/api/v1/auth/refresh";
+    url: '/api/v1/auth/refresh';
 };
 
 export type RefreshTokenApiV1AuthRefreshPostErrors = {
@@ -478,8 +580,7 @@ export type RefreshTokenApiV1AuthRefreshPostErrors = {
     502: ErrorResponseModel;
 };
 
-export type RefreshTokenApiV1AuthRefreshPostError =
-    RefreshTokenApiV1AuthRefreshPostErrors[keyof RefreshTokenApiV1AuthRefreshPostErrors];
+export type RefreshTokenApiV1AuthRefreshPostError = RefreshTokenApiV1AuthRefreshPostErrors[keyof RefreshTokenApiV1AuthRefreshPostErrors];
 
 export type RefreshTokenApiV1AuthRefreshPostResponses = {
     /**
@@ -488,14 +589,13 @@ export type RefreshTokenApiV1AuthRefreshPostResponses = {
     200: RefreshTokenOut;
 };
 
-export type RefreshTokenApiV1AuthRefreshPostResponse =
-    RefreshTokenApiV1AuthRefreshPostResponses[keyof RefreshTokenApiV1AuthRefreshPostResponses];
+export type RefreshTokenApiV1AuthRefreshPostResponse = RefreshTokenApiV1AuthRefreshPostResponses[keyof RefreshTokenApiV1AuthRefreshPostResponses];
 
 export type LogoutApiV1AuthLogoutPostData = {
     body: RefreshTokenIn;
     path?: never;
     query?: never;
-    url: "/api/v1/auth/logout";
+    url: '/api/v1/auth/logout';
 };
 
 export type LogoutApiV1AuthLogoutPostErrors = {
@@ -529,8 +629,7 @@ export type LogoutApiV1AuthLogoutPostErrors = {
     502: ErrorResponseModel;
 };
 
-export type LogoutApiV1AuthLogoutPostError =
-    LogoutApiV1AuthLogoutPostErrors[keyof LogoutApiV1AuthLogoutPostErrors];
+export type LogoutApiV1AuthLogoutPostError = LogoutApiV1AuthLogoutPostErrors[keyof LogoutApiV1AuthLogoutPostErrors];
 
 export type LogoutApiV1AuthLogoutPostResponses = {
     /**
@@ -543,7 +642,7 @@ export type GetCurrentUserInfoApiV1AuthMeGetData = {
     body?: never;
     path?: never;
     query?: never;
-    url: "/api/v1/auth/me";
+    url: '/api/v1/auth/me';
 };
 
 export type GetCurrentUserInfoApiV1AuthMeGetErrors = {
@@ -573,8 +672,7 @@ export type GetCurrentUserInfoApiV1AuthMeGetErrors = {
     502: ErrorResponseModel;
 };
 
-export type GetCurrentUserInfoApiV1AuthMeGetError =
-    GetCurrentUserInfoApiV1AuthMeGetErrors[keyof GetCurrentUserInfoApiV1AuthMeGetErrors];
+export type GetCurrentUserInfoApiV1AuthMeGetError = GetCurrentUserInfoApiV1AuthMeGetErrors[keyof GetCurrentUserInfoApiV1AuthMeGetErrors];
 
 export type GetCurrentUserInfoApiV1AuthMeGetResponses = {
     /**
@@ -583,14 +681,13 @@ export type GetCurrentUserInfoApiV1AuthMeGetResponses = {
     200: AppSchemasAuthUserInfo;
 };
 
-export type GetCurrentUserInfoApiV1AuthMeGetResponse =
-    GetCurrentUserInfoApiV1AuthMeGetResponses[keyof GetCurrentUserInfoApiV1AuthMeGetResponses];
+export type GetCurrentUserInfoApiV1AuthMeGetResponse = GetCurrentUserInfoApiV1AuthMeGetResponses[keyof GetCurrentUserInfoApiV1AuthMeGetResponses];
 
 export type GitlabLoginApiV1AuthGitlabLoginGetData = {
     body?: never;
     path?: never;
     query?: never;
-    url: "/api/v1/auth/gitlab/login";
+    url: '/api/v1/auth/gitlab/login';
 };
 
 export type GitlabLoginApiV1AuthGitlabLoginGetErrors = {
@@ -620,8 +717,7 @@ export type GitlabLoginApiV1AuthGitlabLoginGetErrors = {
     502: ErrorResponseModel;
 };
 
-export type GitlabLoginApiV1AuthGitlabLoginGetError =
-    GitlabLoginApiV1AuthGitlabLoginGetErrors[keyof GitlabLoginApiV1AuthGitlabLoginGetErrors];
+export type GitlabLoginApiV1AuthGitlabLoginGetError = GitlabLoginApiV1AuthGitlabLoginGetErrors[keyof GitlabLoginApiV1AuthGitlabLoginGetErrors];
 
 export type GitlabLoginApiV1AuthGitlabLoginGetResponses = {
     /**
@@ -630,8 +726,7 @@ export type GitlabLoginApiV1AuthGitlabLoginGetResponses = {
     200: GitlabAuthUrl;
 };
 
-export type GitlabLoginApiV1AuthGitlabLoginGetResponse =
-    GitlabLoginApiV1AuthGitlabLoginGetResponses[keyof GitlabLoginApiV1AuthGitlabLoginGetResponses];
+export type GitlabLoginApiV1AuthGitlabLoginGetResponse = GitlabLoginApiV1AuthGitlabLoginGetResponses[keyof GitlabLoginApiV1AuthGitlabLoginGetResponses];
 
 export type GitlabAuthApiV1AuthGitlabCallbackGetData = {
     body?: never;
@@ -646,7 +741,7 @@ export type GitlabAuthApiV1AuthGitlabCallbackGetData = {
          */
         state: string;
     };
-    url: "/api/v1/auth/gitlab/callback";
+    url: '/api/v1/auth/gitlab/callback';
 };
 
 export type GitlabAuthApiV1AuthGitlabCallbackGetErrors = {
@@ -680,8 +775,7 @@ export type GitlabAuthApiV1AuthGitlabCallbackGetErrors = {
     502: ErrorResponseModel;
 };
 
-export type GitlabAuthApiV1AuthGitlabCallbackGetError =
-    GitlabAuthApiV1AuthGitlabCallbackGetErrors[keyof GitlabAuthApiV1AuthGitlabCallbackGetErrors];
+export type GitlabAuthApiV1AuthGitlabCallbackGetError = GitlabAuthApiV1AuthGitlabCallbackGetErrors[keyof GitlabAuthApiV1AuthGitlabCallbackGetErrors];
 
 export type GitlabAuthApiV1AuthGitlabCallbackGetResponses = {
     /**
@@ -699,7 +793,7 @@ export type GetAccessTokenApiV1AuthTokenSessionIdGetData = {
         session_id: string;
     };
     query?: never;
-    url: "/api/v1/auth/token/{session_id}";
+    url: '/api/v1/auth/token/{session_id}';
 };
 
 export type GetAccessTokenApiV1AuthTokenSessionIdGetErrors = {
@@ -733,8 +827,7 @@ export type GetAccessTokenApiV1AuthTokenSessionIdGetErrors = {
     502: ErrorResponseModel;
 };
 
-export type GetAccessTokenApiV1AuthTokenSessionIdGetError =
-    GetAccessTokenApiV1AuthTokenSessionIdGetErrors[keyof GetAccessTokenApiV1AuthTokenSessionIdGetErrors];
+export type GetAccessTokenApiV1AuthTokenSessionIdGetError = GetAccessTokenApiV1AuthTokenSessionIdGetErrors[keyof GetAccessTokenApiV1AuthTokenSessionIdGetErrors];
 
 export type GetAccessTokenApiV1AuthTokenSessionIdGetResponses = {
     /**
@@ -743,14 +836,297 @@ export type GetAccessTokenApiV1AuthTokenSessionIdGetResponses = {
     200: RefreshTokenOut;
 };
 
-export type GetAccessTokenApiV1AuthTokenSessionIdGetResponse =
-    GetAccessTokenApiV1AuthTokenSessionIdGetResponses[keyof GetAccessTokenApiV1AuthTokenSessionIdGetResponses];
+export type GetAccessTokenApiV1AuthTokenSessionIdGetResponse = GetAccessTokenApiV1AuthTokenSessionIdGetResponses[keyof GetAccessTokenApiV1AuthTokenSessionIdGetResponses];
+
+export type AdminLoginApiV1AdminLoginPostData = {
+    body: AdminLoginIn;
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/login';
+};
+
+export type AdminLoginApiV1AdminLoginPostErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponseModel;
+    /**
+     * Invalid credentials
+     */
+    401: ErrorResponseModel;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponseModel;
+    /**
+     * Resource not found
+     */
+    404: ErrorResponseModel;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponseModel;
+    /**
+     * Bad Gateway
+     */
+    502: ErrorResponseModel;
+};
+
+export type AdminLoginApiV1AdminLoginPostError = AdminLoginApiV1AdminLoginPostErrors[keyof AdminLoginApiV1AdminLoginPostErrors];
+
+export type AdminLoginApiV1AdminLoginPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: AdminTokenOut;
+};
+
+export type AdminLoginApiV1AdminLoginPostResponse = AdminLoginApiV1AdminLoginPostResponses[keyof AdminLoginApiV1AdminLoginPostResponses];
+
+export type AdminRefreshApiV1AdminRefreshPostData = {
+    body: RefreshTokenIn;
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/refresh';
+};
+
+export type AdminRefreshApiV1AdminRefreshPostErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponseModel;
+    /**
+     * Invalid credentials
+     */
+    401: ErrorResponseModel;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponseModel;
+    /**
+     * Resource not found
+     */
+    404: ErrorResponseModel;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponseModel;
+    /**
+     * Bad Gateway
+     */
+    502: ErrorResponseModel;
+};
+
+export type AdminRefreshApiV1AdminRefreshPostError = AdminRefreshApiV1AdminRefreshPostErrors[keyof AdminRefreshApiV1AdminRefreshPostErrors];
+
+export type AdminRefreshApiV1AdminRefreshPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: AdminTokenOut;
+};
+
+export type AdminRefreshApiV1AdminRefreshPostResponse = AdminRefreshApiV1AdminRefreshPostResponses[keyof AdminRefreshApiV1AdminRefreshPostResponses];
+
+export type AdminLogoutApiV1AdminLogoutPostData = {
+    body: RefreshTokenIn;
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/logout';
+};
+
+export type AdminLogoutApiV1AdminLogoutPostErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponseModel;
+    /**
+     * Invalid credentials
+     */
+    401: ErrorResponseModel;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponseModel;
+    /**
+     * Resource not found
+     */
+    404: ErrorResponseModel;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponseModel;
+    /**
+     * Bad Gateway
+     */
+    502: ErrorResponseModel;
+};
+
+export type AdminLogoutApiV1AdminLogoutPostError = AdminLogoutApiV1AdminLogoutPostErrors[keyof AdminLogoutApiV1AdminLogoutPostErrors];
+
+export type AdminLogoutApiV1AdminLogoutPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
+export type AdminMeApiV1AdminMeGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/me';
+};
+
+export type AdminMeApiV1AdminMeGetErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponseModel;
+    /**
+     * Invalid credentials
+     */
+    401: ErrorResponseModel;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponseModel;
+    /**
+     * Resource not found
+     */
+    404: ErrorResponseModel;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponseModel;
+    /**
+     * Bad Gateway
+     */
+    502: ErrorResponseModel;
+};
+
+export type AdminMeApiV1AdminMeGetError = AdminMeApiV1AdminMeGetErrors[keyof AdminMeApiV1AdminMeGetErrors];
+
+export type AdminMeApiV1AdminMeGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: AdminInfo;
+};
+
+export type AdminMeApiV1AdminMeGetResponse = AdminMeApiV1AdminMeGetResponses[keyof AdminMeApiV1AdminMeGetResponses];
+
+export type GetGitlabSettingsApiV1AdminSettingsGitlabGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/settings/gitlab';
+};
+
+export type GetGitlabSettingsApiV1AdminSettingsGitlabGetErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponseModel;
+    /**
+     * Invalid credentials
+     */
+    401: ErrorResponseModel;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponseModel;
+    /**
+     * Resource not found
+     */
+    404: ErrorResponseModel;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponseModel;
+    /**
+     * Bad Gateway
+     */
+    502: ErrorResponseModel;
+};
+
+export type GetGitlabSettingsApiV1AdminSettingsGitlabGetError = GetGitlabSettingsApiV1AdminSettingsGitlabGetErrors[keyof GetGitlabSettingsApiV1AdminSettingsGitlabGetErrors];
+
+export type GetGitlabSettingsApiV1AdminSettingsGitlabGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: GitlabSettingsOut;
+};
+
+export type GetGitlabSettingsApiV1AdminSettingsGitlabGetResponse = GetGitlabSettingsApiV1AdminSettingsGitlabGetResponses[keyof GetGitlabSettingsApiV1AdminSettingsGitlabGetResponses];
+
+export type PatchGitlabSettingsApiV1AdminSettingsGitlabPatchData = {
+    body: GitlabSettingsUpdate;
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/settings/gitlab';
+};
+
+export type PatchGitlabSettingsApiV1AdminSettingsGitlabPatchErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponseModel;
+    /**
+     * Invalid credentials
+     */
+    401: ErrorResponseModel;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponseModel;
+    /**
+     * Resource not found
+     */
+    404: ErrorResponseModel;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponseModel;
+    /**
+     * Bad Gateway
+     */
+    502: ErrorResponseModel;
+};
+
+export type PatchGitlabSettingsApiV1AdminSettingsGitlabPatchError = PatchGitlabSettingsApiV1AdminSettingsGitlabPatchErrors[keyof PatchGitlabSettingsApiV1AdminSettingsGitlabPatchErrors];
+
+export type PatchGitlabSettingsApiV1AdminSettingsGitlabPatchResponses = {
+    /**
+     * Successful Response
+     */
+    200: GitlabSettingsOut;
+};
+
+export type PatchGitlabSettingsApiV1AdminSettingsGitlabPatchResponse = PatchGitlabSettingsApiV1AdminSettingsGitlabPatchResponses[keyof PatchGitlabSettingsApiV1AdminSettingsGitlabPatchResponses];
 
 export type GetGitlabUserinfoApiV1GitlabUserinfoGetData = {
     body?: never;
     path?: never;
     query?: never;
-    url: "/api/v1/gitlab/userinfo";
+    url: '/api/v1/gitlab/userinfo';
 };
 
 export type GetGitlabUserinfoApiV1GitlabUserinfoGetErrors = {
@@ -780,8 +1156,7 @@ export type GetGitlabUserinfoApiV1GitlabUserinfoGetErrors = {
     502: ErrorResponseModel;
 };
 
-export type GetGitlabUserinfoApiV1GitlabUserinfoGetError =
-    GetGitlabUserinfoApiV1GitlabUserinfoGetErrors[keyof GetGitlabUserinfoApiV1GitlabUserinfoGetErrors];
+export type GetGitlabUserinfoApiV1GitlabUserinfoGetError = GetGitlabUserinfoApiV1GitlabUserinfoGetErrors[keyof GetGitlabUserinfoApiV1GitlabUserinfoGetErrors];
 
 export type GetGitlabUserinfoApiV1GitlabUserinfoGetResponses = {
     /**
@@ -790,8 +1165,7 @@ export type GetGitlabUserinfoApiV1GitlabUserinfoGetResponses = {
     200: AppSchemasGitlabUserInfo;
 };
 
-export type GetGitlabUserinfoApiV1GitlabUserinfoGetResponse =
-    GetGitlabUserinfoApiV1GitlabUserinfoGetResponses[keyof GetGitlabUserinfoApiV1GitlabUserinfoGetResponses];
+export type GetGitlabUserinfoApiV1GitlabUserinfoGetResponse = GetGitlabUserinfoApiV1GitlabUserinfoGetResponses[keyof GetGitlabUserinfoApiV1GitlabUserinfoGetResponses];
 
 export type ListGitlabProjectsApiV1GitlabProjectsGetData = {
     body?: never;
@@ -810,7 +1184,7 @@ export type ListGitlabProjectsApiV1GitlabProjectsGetData = {
          */
         search?: string | null;
     };
-    url: "/api/v1/gitlab/projects";
+    url: '/api/v1/gitlab/projects';
 };
 
 export type ListGitlabProjectsApiV1GitlabProjectsGetErrors = {
@@ -844,8 +1218,7 @@ export type ListGitlabProjectsApiV1GitlabProjectsGetErrors = {
     502: ErrorResponseModel;
 };
 
-export type ListGitlabProjectsApiV1GitlabProjectsGetError =
-    ListGitlabProjectsApiV1GitlabProjectsGetErrors[keyof ListGitlabProjectsApiV1GitlabProjectsGetErrors];
+export type ListGitlabProjectsApiV1GitlabProjectsGetError = ListGitlabProjectsApiV1GitlabProjectsGetErrors[keyof ListGitlabProjectsApiV1GitlabProjectsGetErrors];
 
 export type ListGitlabProjectsApiV1GitlabProjectsGetResponses = {
     /**
@@ -856,412 +1229,383 @@ export type ListGitlabProjectsApiV1GitlabProjectsGetResponses = {
     200: Array<GitlabProject>;
 };
 
-export type ListGitlabProjectsApiV1GitlabProjectsGetResponse =
-    ListGitlabProjectsApiV1GitlabProjectsGetResponses[keyof ListGitlabProjectsApiV1GitlabProjectsGetResponses];
+export type ListGitlabProjectsApiV1GitlabProjectsGetResponse = ListGitlabProjectsApiV1GitlabProjectsGetResponses[keyof ListGitlabProjectsApiV1GitlabProjectsGetResponses];
 
-export type ListGitlabProjectAccessTokensApiV1GitlabProjectsProjectIdAccessTokensGetData =
-    {
-        body?: never;
-        path: {
-            /**
-             * Project Id
-             */
-            project_id: string | number;
-        };
-        query?: never;
-        url: "/api/v1/gitlab/projects/{project_id}/access-tokens";
+export type ListGitlabProjectAccessTokensApiV1GitlabProjectsProjectIdAccessTokensGetData = {
+    body?: never;
+    path: {
+        /**
+         * Project Id
+         */
+        project_id: string | number;
     };
+    query?: never;
+    url: '/api/v1/gitlab/projects/{project_id}/access-tokens';
+};
 
-export type ListGitlabProjectAccessTokensApiV1GitlabProjectsProjectIdAccessTokensGetErrors =
-    {
+export type ListGitlabProjectAccessTokensApiV1GitlabProjectsProjectIdAccessTokensGetErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponseModel;
+    /**
+     * Invalid credentials
+     */
+    401: ErrorResponseModel;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponseModel;
+    /**
+     * Resource not found
+     */
+    404: ErrorResponseModel;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponseModel;
+    /**
+     * Bad Gateway
+     */
+    502: ErrorResponseModel;
+};
+
+export type ListGitlabProjectAccessTokensApiV1GitlabProjectsProjectIdAccessTokensGetError = ListGitlabProjectAccessTokensApiV1GitlabProjectsProjectIdAccessTokensGetErrors[keyof ListGitlabProjectAccessTokensApiV1GitlabProjectsProjectIdAccessTokensGetErrors];
+
+export type ListGitlabProjectAccessTokensApiV1GitlabProjectsProjectIdAccessTokensGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
+export type CreateGitlabProjectAccessTokenApiV1GitlabProjectsProjectIdAccessTokensPostData = {
+    body?: never;
+    path: {
         /**
-         * Bad Request
+         * Project Id
          */
-        400: ErrorResponseModel;
-        /**
-         * Invalid credentials
-         */
-        401: ErrorResponseModel;
-        /**
-         * Forbidden
-         */
-        403: ErrorResponseModel;
-        /**
-         * Resource not found
-         */
-        404: ErrorResponseModel;
-        /**
-         * Validation Error
-         */
-        422: HttpValidationError;
-        /**
-         * Internal Server Error
-         */
-        500: ErrorResponseModel;
-        /**
-         * Bad Gateway
-         */
-        502: ErrorResponseModel;
+        project_id: string | number;
     };
+    query?: never;
+    url: '/api/v1/gitlab/projects/{project_id}/access-tokens';
+};
 
-export type ListGitlabProjectAccessTokensApiV1GitlabProjectsProjectIdAccessTokensGetError =
-    ListGitlabProjectAccessTokensApiV1GitlabProjectsProjectIdAccessTokensGetErrors[keyof ListGitlabProjectAccessTokensApiV1GitlabProjectsProjectIdAccessTokensGetErrors];
+export type CreateGitlabProjectAccessTokenApiV1GitlabProjectsProjectIdAccessTokensPostErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponseModel;
+    /**
+     * Invalid credentials
+     */
+    401: ErrorResponseModel;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponseModel;
+    /**
+     * Resource not found
+     */
+    404: ErrorResponseModel;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponseModel;
+    /**
+     * Bad Gateway
+     */
+    502: ErrorResponseModel;
+};
 
-export type ListGitlabProjectAccessTokensApiV1GitlabProjectsProjectIdAccessTokensGetResponses =
-    {
+export type CreateGitlabProjectAccessTokenApiV1GitlabProjectsProjectIdAccessTokensPostError = CreateGitlabProjectAccessTokenApiV1GitlabProjectsProjectIdAccessTokensPostErrors[keyof CreateGitlabProjectAccessTokenApiV1GitlabProjectsProjectIdAccessTokensPostErrors];
+
+export type CreateGitlabProjectAccessTokenApiV1GitlabProjectsProjectIdAccessTokensPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
+export type GetGitlabProjectAccessTokenApiV1GitlabProjectsProjectIdAccessTokensAccessTokenIdGetData = {
+    body?: never;
+    path: {
         /**
-         * Successful Response
+         * Project Id
          */
-        200: unknown;
+        project_id: string | number;
+        /**
+         * Access Token Id
+         */
+        access_token_id: string | number;
     };
+    query?: never;
+    url: '/api/v1/gitlab/projects/{project_id}/access-tokens/{access_token_id}';
+};
 
-export type CreateGitlabProjectAccessTokenApiV1GitlabProjectsProjectIdAccessTokensPostData =
-    {
-        body?: never;
-        path: {
-            /**
-             * Project Id
-             */
-            project_id: string | number;
-        };
-        query?: never;
-        url: "/api/v1/gitlab/projects/{project_id}/access-tokens";
+export type GetGitlabProjectAccessTokenApiV1GitlabProjectsProjectIdAccessTokensAccessTokenIdGetErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponseModel;
+    /**
+     * Invalid credentials
+     */
+    401: ErrorResponseModel;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponseModel;
+    /**
+     * Resource not found
+     */
+    404: ErrorResponseModel;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponseModel;
+    /**
+     * Bad Gateway
+     */
+    502: ErrorResponseModel;
+};
+
+export type GetGitlabProjectAccessTokenApiV1GitlabProjectsProjectIdAccessTokensAccessTokenIdGetError = GetGitlabProjectAccessTokenApiV1GitlabProjectsProjectIdAccessTokensAccessTokenIdGetErrors[keyof GetGitlabProjectAccessTokenApiV1GitlabProjectsProjectIdAccessTokensAccessTokenIdGetErrors];
+
+export type GetGitlabProjectAccessTokenApiV1GitlabProjectsProjectIdAccessTokensAccessTokenIdGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
+export type ListGitlabProjectWebhooksApiV1GitlabProjectsProjectIdWebhooksGetData = {
+    body?: never;
+    path: {
+        /**
+         * Project Id
+         */
+        project_id: string | number;
     };
+    query?: never;
+    url: '/api/v1/gitlab/projects/{project_id}/webhooks';
+};
 
-export type CreateGitlabProjectAccessTokenApiV1GitlabProjectsProjectIdAccessTokensPostErrors =
-    {
+export type ListGitlabProjectWebhooksApiV1GitlabProjectsProjectIdWebhooksGetErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponseModel;
+    /**
+     * Invalid credentials
+     */
+    401: ErrorResponseModel;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponseModel;
+    /**
+     * Resource not found
+     */
+    404: ErrorResponseModel;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponseModel;
+    /**
+     * Bad Gateway
+     */
+    502: ErrorResponseModel;
+};
+
+export type ListGitlabProjectWebhooksApiV1GitlabProjectsProjectIdWebhooksGetError = ListGitlabProjectWebhooksApiV1GitlabProjectsProjectIdWebhooksGetErrors[keyof ListGitlabProjectWebhooksApiV1GitlabProjectsProjectIdWebhooksGetErrors];
+
+export type ListGitlabProjectWebhooksApiV1GitlabProjectsProjectIdWebhooksGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
+export type CreateGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksPostData = {
+    body?: never;
+    path: {
         /**
-         * Bad Request
+         * Project Id
          */
-        400: ErrorResponseModel;
-        /**
-         * Invalid credentials
-         */
-        401: ErrorResponseModel;
-        /**
-         * Forbidden
-         */
-        403: ErrorResponseModel;
-        /**
-         * Resource not found
-         */
-        404: ErrorResponseModel;
-        /**
-         * Validation Error
-         */
-        422: HttpValidationError;
-        /**
-         * Internal Server Error
-         */
-        500: ErrorResponseModel;
-        /**
-         * Bad Gateway
-         */
-        502: ErrorResponseModel;
+        project_id: string | number;
     };
+    query?: never;
+    url: '/api/v1/gitlab/projects/{project_id}/webhooks';
+};
 
-export type CreateGitlabProjectAccessTokenApiV1GitlabProjectsProjectIdAccessTokensPostError =
-    CreateGitlabProjectAccessTokenApiV1GitlabProjectsProjectIdAccessTokensPostErrors[keyof CreateGitlabProjectAccessTokenApiV1GitlabProjectsProjectIdAccessTokensPostErrors];
+export type CreateGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksPostErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponseModel;
+    /**
+     * Invalid credentials
+     */
+    401: ErrorResponseModel;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponseModel;
+    /**
+     * Resource not found
+     */
+    404: ErrorResponseModel;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponseModel;
+    /**
+     * Bad Gateway
+     */
+    502: ErrorResponseModel;
+};
 
-export type CreateGitlabProjectAccessTokenApiV1GitlabProjectsProjectIdAccessTokensPostResponses =
-    {
+export type CreateGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksPostError = CreateGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksPostErrors[keyof CreateGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksPostErrors];
+
+export type CreateGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
+export type DeleteGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksHookIdDeleteData = {
+    body?: never;
+    path: {
         /**
-         * Successful Response
+         * Project Id
          */
-        200: unknown;
+        project_id: string | number;
+        /**
+         * Hook Id
+         */
+        hook_id: string | number;
     };
+    query?: never;
+    url: '/api/v1/gitlab/projects/{project_id}/webhooks/{hook_id}';
+};
 
-export type GetGitlabProjectAccessTokenApiV1GitlabProjectsProjectIdAccessTokensAccessTokenIdGetData =
-    {
-        body?: never;
-        path: {
-            /**
-             * Project Id
-             */
-            project_id: string | number;
-            /**
-             * Access Token Id
-             */
-            access_token_id: string | number;
-        };
-        query?: never;
-        url: "/api/v1/gitlab/projects/{project_id}/access-tokens/{access_token_id}";
+export type DeleteGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksHookIdDeleteErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponseModel;
+    /**
+     * Invalid credentials
+     */
+    401: ErrorResponseModel;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponseModel;
+    /**
+     * Resource not found
+     */
+    404: ErrorResponseModel;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponseModel;
+    /**
+     * Bad Gateway
+     */
+    502: ErrorResponseModel;
+};
+
+export type DeleteGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksHookIdDeleteError = DeleteGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksHookIdDeleteErrors[keyof DeleteGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksHookIdDeleteErrors];
+
+export type DeleteGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksHookIdDeleteResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
+export type GetGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksHookIdGetData = {
+    body?: never;
+    path: {
+        /**
+         * Project Id
+         */
+        project_id: string | number;
+        /**
+         * Hook Id
+         */
+        hook_id: string | number;
     };
+    query?: never;
+    url: '/api/v1/gitlab/projects/{project_id}/webhooks/{hook_id}';
+};
 
-export type GetGitlabProjectAccessTokenApiV1GitlabProjectsProjectIdAccessTokensAccessTokenIdGetErrors =
-    {
-        /**
-         * Bad Request
-         */
-        400: ErrorResponseModel;
-        /**
-         * Invalid credentials
-         */
-        401: ErrorResponseModel;
-        /**
-         * Forbidden
-         */
-        403: ErrorResponseModel;
-        /**
-         * Resource not found
-         */
-        404: ErrorResponseModel;
-        /**
-         * Validation Error
-         */
-        422: HttpValidationError;
-        /**
-         * Internal Server Error
-         */
-        500: ErrorResponseModel;
-        /**
-         * Bad Gateway
-         */
-        502: ErrorResponseModel;
-    };
+export type GetGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksHookIdGetErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponseModel;
+    /**
+     * Invalid credentials
+     */
+    401: ErrorResponseModel;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponseModel;
+    /**
+     * Resource not found
+     */
+    404: ErrorResponseModel;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponseModel;
+    /**
+     * Bad Gateway
+     */
+    502: ErrorResponseModel;
+};
 
-export type GetGitlabProjectAccessTokenApiV1GitlabProjectsProjectIdAccessTokensAccessTokenIdGetError =
-    GetGitlabProjectAccessTokenApiV1GitlabProjectsProjectIdAccessTokensAccessTokenIdGetErrors[keyof GetGitlabProjectAccessTokenApiV1GitlabProjectsProjectIdAccessTokensAccessTokenIdGetErrors];
+export type GetGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksHookIdGetError = GetGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksHookIdGetErrors[keyof GetGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksHookIdGetErrors];
 
-export type GetGitlabProjectAccessTokenApiV1GitlabProjectsProjectIdAccessTokensAccessTokenIdGetResponses =
-    {
-        /**
-         * Successful Response
-         */
-        200: unknown;
-    };
-
-export type ListGitlabProjectWebhooksApiV1GitlabProjectsProjectIdWebhooksGetData =
-    {
-        body?: never;
-        path: {
-            /**
-             * Project Id
-             */
-            project_id: string | number;
-        };
-        query?: never;
-        url: "/api/v1/gitlab/projects/{project_id}/webhooks";
-    };
-
-export type ListGitlabProjectWebhooksApiV1GitlabProjectsProjectIdWebhooksGetErrors =
-    {
-        /**
-         * Bad Request
-         */
-        400: ErrorResponseModel;
-        /**
-         * Invalid credentials
-         */
-        401: ErrorResponseModel;
-        /**
-         * Forbidden
-         */
-        403: ErrorResponseModel;
-        /**
-         * Resource not found
-         */
-        404: ErrorResponseModel;
-        /**
-         * Validation Error
-         */
-        422: HttpValidationError;
-        /**
-         * Internal Server Error
-         */
-        500: ErrorResponseModel;
-        /**
-         * Bad Gateway
-         */
-        502: ErrorResponseModel;
-    };
-
-export type ListGitlabProjectWebhooksApiV1GitlabProjectsProjectIdWebhooksGetError =
-    ListGitlabProjectWebhooksApiV1GitlabProjectsProjectIdWebhooksGetErrors[keyof ListGitlabProjectWebhooksApiV1GitlabProjectsProjectIdWebhooksGetErrors];
-
-export type ListGitlabProjectWebhooksApiV1GitlabProjectsProjectIdWebhooksGetResponses =
-    {
-        /**
-         * Successful Response
-         */
-        200: unknown;
-    };
-
-export type CreateGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksPostData =
-    {
-        body?: never;
-        path: {
-            /**
-             * Project Id
-             */
-            project_id: string | number;
-        };
-        query?: never;
-        url: "/api/v1/gitlab/projects/{project_id}/webhooks";
-    };
-
-export type CreateGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksPostErrors =
-    {
-        /**
-         * Bad Request
-         */
-        400: ErrorResponseModel;
-        /**
-         * Invalid credentials
-         */
-        401: ErrorResponseModel;
-        /**
-         * Forbidden
-         */
-        403: ErrorResponseModel;
-        /**
-         * Resource not found
-         */
-        404: ErrorResponseModel;
-        /**
-         * Validation Error
-         */
-        422: HttpValidationError;
-        /**
-         * Internal Server Error
-         */
-        500: ErrorResponseModel;
-        /**
-         * Bad Gateway
-         */
-        502: ErrorResponseModel;
-    };
-
-export type CreateGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksPostError =
-    CreateGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksPostErrors[keyof CreateGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksPostErrors];
-
-export type CreateGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksPostResponses =
-    {
-        /**
-         * Successful Response
-         */
-        200: unknown;
-    };
-
-export type DeleteGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksHookIdDeleteData =
-    {
-        body?: never;
-        path: {
-            /**
-             * Project Id
-             */
-            project_id: string | number;
-            /**
-             * Hook Id
-             */
-            hook_id: string | number;
-        };
-        query?: never;
-        url: "/api/v1/gitlab/projects/{project_id}/webhooks/{hook_id}";
-    };
-
-export type DeleteGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksHookIdDeleteErrors =
-    {
-        /**
-         * Bad Request
-         */
-        400: ErrorResponseModel;
-        /**
-         * Invalid credentials
-         */
-        401: ErrorResponseModel;
-        /**
-         * Forbidden
-         */
-        403: ErrorResponseModel;
-        /**
-         * Resource not found
-         */
-        404: ErrorResponseModel;
-        /**
-         * Validation Error
-         */
-        422: HttpValidationError;
-        /**
-         * Internal Server Error
-         */
-        500: ErrorResponseModel;
-        /**
-         * Bad Gateway
-         */
-        502: ErrorResponseModel;
-    };
-
-export type DeleteGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksHookIdDeleteError =
-    DeleteGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksHookIdDeleteErrors[keyof DeleteGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksHookIdDeleteErrors];
-
-export type DeleteGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksHookIdDeleteResponses =
-    {
-        /**
-         * Successful Response
-         */
-        200: unknown;
-    };
-
-export type GetGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksHookIdGetData =
-    {
-        body?: never;
-        path: {
-            /**
-             * Project Id
-             */
-            project_id: string | number;
-            /**
-             * Hook Id
-             */
-            hook_id: string | number;
-        };
-        query?: never;
-        url: "/api/v1/gitlab/projects/{project_id}/webhooks/{hook_id}";
-    };
-
-export type GetGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksHookIdGetErrors =
-    {
-        /**
-         * Bad Request
-         */
-        400: ErrorResponseModel;
-        /**
-         * Invalid credentials
-         */
-        401: ErrorResponseModel;
-        /**
-         * Forbidden
-         */
-        403: ErrorResponseModel;
-        /**
-         * Resource not found
-         */
-        404: ErrorResponseModel;
-        /**
-         * Validation Error
-         */
-        422: HttpValidationError;
-        /**
-         * Internal Server Error
-         */
-        500: ErrorResponseModel;
-        /**
-         * Bad Gateway
-         */
-        502: ErrorResponseModel;
-    };
-
-export type GetGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksHookIdGetError =
-    GetGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksHookIdGetErrors[keyof GetGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksHookIdGetErrors];
-
-export type GetGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksHookIdGetResponses =
-    {
-        /**
-         * Successful Response
-         */
-        200: unknown;
-    };
+export type GetGitlabProjectWebhookApiV1GitlabProjectsProjectIdWebhooksHookIdGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
 
 export type GetBotStatusApiV1BotsBotIdStatusGetData = {
     body?: never;
@@ -1272,7 +1616,7 @@ export type GetBotStatusApiV1BotsBotIdStatusGetData = {
         bot_id: number;
     };
     query?: never;
-    url: "/api/v1/bots/{bot_id}/status";
+    url: '/api/v1/bots/{bot_id}/status';
 };
 
 export type GetBotStatusApiV1BotsBotIdStatusGetErrors = {
@@ -1306,8 +1650,7 @@ export type GetBotStatusApiV1BotsBotIdStatusGetErrors = {
     502: ErrorResponseModel;
 };
 
-export type GetBotStatusApiV1BotsBotIdStatusGetError =
-    GetBotStatusApiV1BotsBotIdStatusGetErrors[keyof GetBotStatusApiV1BotsBotIdStatusGetErrors];
+export type GetBotStatusApiV1BotsBotIdStatusGetError = GetBotStatusApiV1BotsBotIdStatusGetErrors[keyof GetBotStatusApiV1BotsBotIdStatusGetErrors];
 
 export type GetBotStatusApiV1BotsBotIdStatusGetResponses = {
     /**
@@ -1316,8 +1659,7 @@ export type GetBotStatusApiV1BotsBotIdStatusGetResponses = {
     200: BotStatusResponse;
 };
 
-export type GetBotStatusApiV1BotsBotIdStatusGetResponse =
-    GetBotStatusApiV1BotsBotIdStatusGetResponses[keyof GetBotStatusApiV1BotsBotIdStatusGetResponses];
+export type GetBotStatusApiV1BotsBotIdStatusGetResponse = GetBotStatusApiV1BotsBotIdStatusGetResponses[keyof GetBotStatusApiV1BotsBotIdStatusGetResponses];
 
 export type ListBotsApiV1BotsGetData = {
     body?: never;
@@ -1332,7 +1674,7 @@ export type ListBotsApiV1BotsGetData = {
          */
         per_page?: number;
     };
-    url: "/api/v1/bots/";
+    url: '/api/v1/bots/';
 };
 
 export type ListBotsApiV1BotsGetErrors = {
@@ -1366,8 +1708,7 @@ export type ListBotsApiV1BotsGetErrors = {
     502: ErrorResponseModel;
 };
 
-export type ListBotsApiV1BotsGetError =
-    ListBotsApiV1BotsGetErrors[keyof ListBotsApiV1BotsGetErrors];
+export type ListBotsApiV1BotsGetError = ListBotsApiV1BotsGetErrors[keyof ListBotsApiV1BotsGetErrors];
 
 export type ListBotsApiV1BotsGetResponses = {
     /**
@@ -1376,14 +1717,13 @@ export type ListBotsApiV1BotsGetResponses = {
     200: BotReadList;
 };
 
-export type ListBotsApiV1BotsGetResponse =
-    ListBotsApiV1BotsGetResponses[keyof ListBotsApiV1BotsGetResponses];
+export type ListBotsApiV1BotsGetResponse = ListBotsApiV1BotsGetResponses[keyof ListBotsApiV1BotsGetResponses];
 
 export type CreateBotApiV1BotsPostData = {
     body: BotCreate;
     path?: never;
     query?: never;
-    url: "/api/v1/bots/";
+    url: '/api/v1/bots/';
 };
 
 export type CreateBotApiV1BotsPostErrors = {
@@ -1417,8 +1757,7 @@ export type CreateBotApiV1BotsPostErrors = {
     502: ErrorResponseModel;
 };
 
-export type CreateBotApiV1BotsPostError =
-    CreateBotApiV1BotsPostErrors[keyof CreateBotApiV1BotsPostErrors];
+export type CreateBotApiV1BotsPostError = CreateBotApiV1BotsPostErrors[keyof CreateBotApiV1BotsPostErrors];
 
 export type CreateBotApiV1BotsPostResponses = {
     /**
@@ -1427,8 +1766,7 @@ export type CreateBotApiV1BotsPostResponses = {
     201: BotCreateResponse;
 };
 
-export type CreateBotApiV1BotsPostResponse =
-    CreateBotApiV1BotsPostResponses[keyof CreateBotApiV1BotsPostResponses];
+export type CreateBotApiV1BotsPostResponse = CreateBotApiV1BotsPostResponses[keyof CreateBotApiV1BotsPostResponses];
 
 export type DeleteBotApiV1BotsBotIdDeleteData = {
     body?: never;
@@ -1439,7 +1777,7 @@ export type DeleteBotApiV1BotsBotIdDeleteData = {
         bot_id: number;
     };
     query?: never;
-    url: "/api/v1/bots/{bot_id}";
+    url: '/api/v1/bots/{bot_id}';
 };
 
 export type DeleteBotApiV1BotsBotIdDeleteErrors = {
@@ -1473,8 +1811,7 @@ export type DeleteBotApiV1BotsBotIdDeleteErrors = {
     502: ErrorResponseModel;
 };
 
-export type DeleteBotApiV1BotsBotIdDeleteError =
-    DeleteBotApiV1BotsBotIdDeleteErrors[keyof DeleteBotApiV1BotsBotIdDeleteErrors];
+export type DeleteBotApiV1BotsBotIdDeleteError = DeleteBotApiV1BotsBotIdDeleteErrors[keyof DeleteBotApiV1BotsBotIdDeleteErrors];
 
 export type DeleteBotApiV1BotsBotIdDeleteResponses = {
     /**
@@ -1483,8 +1820,7 @@ export type DeleteBotApiV1BotsBotIdDeleteResponses = {
     200: BotDeleteResponse;
 };
 
-export type DeleteBotApiV1BotsBotIdDeleteResponse =
-    DeleteBotApiV1BotsBotIdDeleteResponses[keyof DeleteBotApiV1BotsBotIdDeleteResponses];
+export type DeleteBotApiV1BotsBotIdDeleteResponse = DeleteBotApiV1BotsBotIdDeleteResponses[keyof DeleteBotApiV1BotsBotIdDeleteResponses];
 
 export type GetBotApiV1BotsBotIdGetData = {
     body?: never;
@@ -1495,7 +1831,7 @@ export type GetBotApiV1BotsBotIdGetData = {
         bot_id: number;
     };
     query?: never;
-    url: "/api/v1/bots/{bot_id}";
+    url: '/api/v1/bots/{bot_id}';
 };
 
 export type GetBotApiV1BotsBotIdGetErrors = {
@@ -1529,8 +1865,7 @@ export type GetBotApiV1BotsBotIdGetErrors = {
     502: ErrorResponseModel;
 };
 
-export type GetBotApiV1BotsBotIdGetError =
-    GetBotApiV1BotsBotIdGetErrors[keyof GetBotApiV1BotsBotIdGetErrors];
+export type GetBotApiV1BotsBotIdGetError = GetBotApiV1BotsBotIdGetErrors[keyof GetBotApiV1BotsBotIdGetErrors];
 
 export type GetBotApiV1BotsBotIdGetResponses = {
     /**
@@ -1539,8 +1874,7 @@ export type GetBotApiV1BotsBotIdGetResponses = {
     200: BotRead;
 };
 
-export type GetBotApiV1BotsBotIdGetResponse =
-    GetBotApiV1BotsBotIdGetResponses[keyof GetBotApiV1BotsBotIdGetResponses];
+export type GetBotApiV1BotsBotIdGetResponse = GetBotApiV1BotsBotIdGetResponses[keyof GetBotApiV1BotsBotIdGetResponses];
 
 export type UpdateBotApiV1BotsBotIdPatchData = {
     body: BotUpdate;
@@ -1551,7 +1885,7 @@ export type UpdateBotApiV1BotsBotIdPatchData = {
         bot_id: number;
     };
     query?: never;
-    url: "/api/v1/bots/{bot_id}";
+    url: '/api/v1/bots/{bot_id}';
 };
 
 export type UpdateBotApiV1BotsBotIdPatchErrors = {
@@ -1585,8 +1919,7 @@ export type UpdateBotApiV1BotsBotIdPatchErrors = {
     502: ErrorResponseModel;
 };
 
-export type UpdateBotApiV1BotsBotIdPatchError =
-    UpdateBotApiV1BotsBotIdPatchErrors[keyof UpdateBotApiV1BotsBotIdPatchErrors];
+export type UpdateBotApiV1BotsBotIdPatchError = UpdateBotApiV1BotsBotIdPatchErrors[keyof UpdateBotApiV1BotsBotIdPatchErrors];
 
 export type UpdateBotApiV1BotsBotIdPatchResponses = {
     /**
@@ -1595,8 +1928,7 @@ export type UpdateBotApiV1BotsBotIdPatchResponses = {
     200: BotUpdateResponse;
 };
 
-export type UpdateBotApiV1BotsBotIdPatchResponse =
-    UpdateBotApiV1BotsBotIdPatchResponses[keyof UpdateBotApiV1BotsBotIdPatchResponses];
+export type UpdateBotApiV1BotsBotIdPatchResponse = UpdateBotApiV1BotsBotIdPatchResponses[keyof UpdateBotApiV1BotsBotIdPatchResponses];
 
 export type CreateNewBotAccessTokenApiV1BotsBotIdNewAccessTokenPatchData = {
     body?: never;
@@ -1607,7 +1939,7 @@ export type CreateNewBotAccessTokenApiV1BotsBotIdNewAccessTokenPatchData = {
         bot_id: number;
     };
     query?: never;
-    url: "/api/v1/bots/{bot_id}/new-access-token";
+    url: '/api/v1/bots/{bot_id}/new-access-token';
 };
 
 export type CreateNewBotAccessTokenApiV1BotsBotIdNewAccessTokenPatchErrors = {
@@ -1641,19 +1973,16 @@ export type CreateNewBotAccessTokenApiV1BotsBotIdNewAccessTokenPatchErrors = {
     502: ErrorResponseModel;
 };
 
-export type CreateNewBotAccessTokenApiV1BotsBotIdNewAccessTokenPatchError =
-    CreateNewBotAccessTokenApiV1BotsBotIdNewAccessTokenPatchErrors[keyof CreateNewBotAccessTokenApiV1BotsBotIdNewAccessTokenPatchErrors];
+export type CreateNewBotAccessTokenApiV1BotsBotIdNewAccessTokenPatchError = CreateNewBotAccessTokenApiV1BotsBotIdNewAccessTokenPatchErrors[keyof CreateNewBotAccessTokenApiV1BotsBotIdNewAccessTokenPatchErrors];
 
-export type CreateNewBotAccessTokenApiV1BotsBotIdNewAccessTokenPatchResponses =
-    {
-        /**
-         * Successful Response
-         */
-        200: BotUpdateResponse;
-    };
+export type CreateNewBotAccessTokenApiV1BotsBotIdNewAccessTokenPatchResponses = {
+    /**
+     * Successful Response
+     */
+    200: BotUpdateResponse;
+};
 
-export type CreateNewBotAccessTokenApiV1BotsBotIdNewAccessTokenPatchResponse =
-    CreateNewBotAccessTokenApiV1BotsBotIdNewAccessTokenPatchResponses[keyof CreateNewBotAccessTokenApiV1BotsBotIdNewAccessTokenPatchResponses];
+export type CreateNewBotAccessTokenApiV1BotsBotIdNewAccessTokenPatchResponse = CreateNewBotAccessTokenApiV1BotsBotIdNewAccessTokenPatchResponses[keyof CreateNewBotAccessTokenApiV1BotsBotIdNewAccessTokenPatchResponses];
 
 export type ToggleBotActiveApiV1BotsBotIdToggleActivePatchData = {
     body?: never;
@@ -1664,7 +1993,7 @@ export type ToggleBotActiveApiV1BotsBotIdToggleActivePatchData = {
         bot_id: number;
     };
     query?: never;
-    url: "/api/v1/bots/{bot_id}/toggle-active";
+    url: '/api/v1/bots/{bot_id}/toggle-active';
 };
 
 export type ToggleBotActiveApiV1BotsBotIdToggleActivePatchErrors = {
@@ -1698,8 +2027,7 @@ export type ToggleBotActiveApiV1BotsBotIdToggleActivePatchErrors = {
     502: ErrorResponseModel;
 };
 
-export type ToggleBotActiveApiV1BotsBotIdToggleActivePatchError =
-    ToggleBotActiveApiV1BotsBotIdToggleActivePatchErrors[keyof ToggleBotActiveApiV1BotsBotIdToggleActivePatchErrors];
+export type ToggleBotActiveApiV1BotsBotIdToggleActivePatchError = ToggleBotActiveApiV1BotsBotIdToggleActivePatchErrors[keyof ToggleBotActiveApiV1BotsBotIdToggleActivePatchErrors];
 
 export type ToggleBotActiveApiV1BotsBotIdToggleActivePatchResponses = {
     /**
@@ -1708,8 +2036,7 @@ export type ToggleBotActiveApiV1BotsBotIdToggleActivePatchResponses = {
     200: BotStatusToggleResponse;
 };
 
-export type ToggleBotActiveApiV1BotsBotIdToggleActivePatchResponse =
-    ToggleBotActiveApiV1BotsBotIdToggleActivePatchResponses[keyof ToggleBotActiveApiV1BotsBotIdToggleActivePatchResponses];
+export type ToggleBotActiveApiV1BotsBotIdToggleActivePatchResponse = ToggleBotActiveApiV1BotsBotIdToggleActivePatchResponses[keyof ToggleBotActiveApiV1BotsBotIdToggleActivePatchResponses];
 
 export type RevokeBotTokenApiV1BotsBotIdRevokeDeleteData = {
     body?: never;
@@ -1720,7 +2047,7 @@ export type RevokeBotTokenApiV1BotsBotIdRevokeDeleteData = {
         bot_id: number;
     };
     query?: never;
-    url: "/api/v1/bots/{bot_id}/revoke";
+    url: '/api/v1/bots/{bot_id}/revoke';
 };
 
 export type RevokeBotTokenApiV1BotsBotIdRevokeDeleteErrors = {
@@ -1754,8 +2081,7 @@ export type RevokeBotTokenApiV1BotsBotIdRevokeDeleteErrors = {
     502: ErrorResponseModel;
 };
 
-export type RevokeBotTokenApiV1BotsBotIdRevokeDeleteError =
-    RevokeBotTokenApiV1BotsBotIdRevokeDeleteErrors[keyof RevokeBotTokenApiV1BotsBotIdRevokeDeleteErrors];
+export type RevokeBotTokenApiV1BotsBotIdRevokeDeleteError = RevokeBotTokenApiV1BotsBotIdRevokeDeleteErrors[keyof RevokeBotTokenApiV1BotsBotIdRevokeDeleteErrors];
 
 export type RevokeBotTokenApiV1BotsBotIdRevokeDeleteResponses = {
     /**
@@ -1764,8 +2090,7 @@ export type RevokeBotTokenApiV1BotsBotIdRevokeDeleteResponses = {
     204: void;
 };
 
-export type RevokeBotTokenApiV1BotsBotIdRevokeDeleteResponse =
-    RevokeBotTokenApiV1BotsBotIdRevokeDeleteResponses[keyof RevokeBotTokenApiV1BotsBotIdRevokeDeleteResponses];
+export type RevokeBotTokenApiV1BotsBotIdRevokeDeleteResponse = RevokeBotTokenApiV1BotsBotIdRevokeDeleteResponses[keyof RevokeBotTokenApiV1BotsBotIdRevokeDeleteResponses];
 
 export type RotateBotTokenApiV1BotsBotIdRotateTokenPatchData = {
     body?: never;
@@ -1776,7 +2101,7 @@ export type RotateBotTokenApiV1BotsBotIdRotateTokenPatchData = {
         bot_id: number;
     };
     query?: never;
-    url: "/api/v1/bots/{bot_id}/rotate-token";
+    url: '/api/v1/bots/{bot_id}/rotate-token';
 };
 
 export type RotateBotTokenApiV1BotsBotIdRotateTokenPatchErrors = {
@@ -1810,8 +2135,7 @@ export type RotateBotTokenApiV1BotsBotIdRotateTokenPatchErrors = {
     502: ErrorResponseModel;
 };
 
-export type RotateBotTokenApiV1BotsBotIdRotateTokenPatchError =
-    RotateBotTokenApiV1BotsBotIdRotateTokenPatchErrors[keyof RotateBotTokenApiV1BotsBotIdRotateTokenPatchErrors];
+export type RotateBotTokenApiV1BotsBotIdRotateTokenPatchError = RotateBotTokenApiV1BotsBotIdRotateTokenPatchErrors[keyof RotateBotTokenApiV1BotsBotIdRotateTokenPatchErrors];
 
 export type RotateBotTokenApiV1BotsBotIdRotateTokenPatchResponses = {
     /**
@@ -1820,14 +2144,13 @@ export type RotateBotTokenApiV1BotsBotIdRotateTokenPatchResponses = {
     200: BotRead;
 };
 
-export type RotateBotTokenApiV1BotsBotIdRotateTokenPatchResponse =
-    RotateBotTokenApiV1BotsBotIdRotateTokenPatchResponses[keyof RotateBotTokenApiV1BotsBotIdRotateTokenPatchResponses];
+export type RotateBotTokenApiV1BotsBotIdRotateTokenPatchResponse = RotateBotTokenApiV1BotsBotIdRotateTokenPatchResponses[keyof RotateBotTokenApiV1BotsBotIdRotateTokenPatchResponses];
 
 export type GetAvailableAvatarsApiV1ConfigAvailableAvatarsGetData = {
     body?: never;
     path?: never;
     query?: never;
-    url: "/api/v1/config/available-avatars";
+    url: '/api/v1/config/available-avatars';
 };
 
 export type GetAvailableAvatarsApiV1ConfigAvailableAvatarsGetErrors = {
@@ -1857,8 +2180,7 @@ export type GetAvailableAvatarsApiV1ConfigAvailableAvatarsGetErrors = {
     502: ErrorResponseModel;
 };
 
-export type GetAvailableAvatarsApiV1ConfigAvailableAvatarsGetError =
-    GetAvailableAvatarsApiV1ConfigAvailableAvatarsGetErrors[keyof GetAvailableAvatarsApiV1ConfigAvailableAvatarsGetErrors];
+export type GetAvailableAvatarsApiV1ConfigAvailableAvatarsGetError = GetAvailableAvatarsApiV1ConfigAvailableAvatarsGetErrors[keyof GetAvailableAvatarsApiV1ConfigAvailableAvatarsGetErrors];
 
 export type GetAvailableAvatarsApiV1ConfigAvailableAvatarsGetResponses = {
     /**
@@ -1871,14 +2193,13 @@ export type GetAvailableAvatarsApiV1ConfigAvailableAvatarsGetResponses = {
     };
 };
 
-export type GetAvailableAvatarsApiV1ConfigAvailableAvatarsGetResponse =
-    GetAvailableAvatarsApiV1ConfigAvailableAvatarsGetResponses[keyof GetAvailableAvatarsApiV1ConfigAvailableAvatarsGetResponses];
+export type GetAvailableAvatarsApiV1ConfigAvailableAvatarsGetResponse = GetAvailableAvatarsApiV1ConfigAvailableAvatarsGetResponses[keyof GetAvailableAvatarsApiV1ConfigAvailableAvatarsGetResponses];
 
 export type GetAvailableLlmsApiV1ConfigAvailableLlmsGetData = {
     body?: never;
     path?: never;
     query?: never;
-    url: "/api/v1/config/available-llms";
+    url: '/api/v1/config/available-llms';
 };
 
 export type GetAvailableLlmsApiV1ConfigAvailableLlmsGetErrors = {
@@ -1908,8 +2229,7 @@ export type GetAvailableLlmsApiV1ConfigAvailableLlmsGetErrors = {
     502: ErrorResponseModel;
 };
 
-export type GetAvailableLlmsApiV1ConfigAvailableLlmsGetError =
-    GetAvailableLlmsApiV1ConfigAvailableLlmsGetErrors[keyof GetAvailableLlmsApiV1ConfigAvailableLlmsGetErrors];
+export type GetAvailableLlmsApiV1ConfigAvailableLlmsGetError = GetAvailableLlmsApiV1ConfigAvailableLlmsGetErrors[keyof GetAvailableLlmsApiV1ConfigAvailableLlmsGetErrors];
 
 export type GetAvailableLlmsApiV1ConfigAvailableLlmsGetResponses = {
     /**
@@ -1922,14 +2242,13 @@ export type GetAvailableLlmsApiV1ConfigAvailableLlmsGetResponses = {
     };
 };
 
-export type GetAvailableLlmsApiV1ConfigAvailableLlmsGetResponse =
-    GetAvailableLlmsApiV1ConfigAvailableLlmsGetResponses[keyof GetAvailableLlmsApiV1ConfigAvailableLlmsGetResponses];
+export type GetAvailableLlmsApiV1ConfigAvailableLlmsGetResponse = GetAvailableLlmsApiV1ConfigAvailableLlmsGetResponses[keyof GetAvailableLlmsApiV1ConfigAvailableLlmsGetResponses];
 
 export type AddUpdateAvailableLlmApiV1ConfigAvailableLlmsPostData = {
     body: LlmModelInfo;
     path?: never;
     query?: never;
-    url: "/api/v1/config/available-llms";
+    url: '/api/v1/config/available-llms';
 };
 
 export type AddUpdateAvailableLlmApiV1ConfigAvailableLlmsPostErrors = {
@@ -1963,8 +2282,7 @@ export type AddUpdateAvailableLlmApiV1ConfigAvailableLlmsPostErrors = {
     502: ErrorResponseModel;
 };
 
-export type AddUpdateAvailableLlmApiV1ConfigAvailableLlmsPostError =
-    AddUpdateAvailableLlmApiV1ConfigAvailableLlmsPostErrors[keyof AddUpdateAvailableLlmApiV1ConfigAvailableLlmsPostErrors];
+export type AddUpdateAvailableLlmApiV1ConfigAvailableLlmsPostError = AddUpdateAvailableLlmApiV1ConfigAvailableLlmsPostErrors[keyof AddUpdateAvailableLlmApiV1ConfigAvailableLlmsPostErrors];
 
 export type AddUpdateAvailableLlmApiV1ConfigAvailableLlmsPostResponses = {
     /**
@@ -1973,8 +2291,7 @@ export type AddUpdateAvailableLlmApiV1ConfigAvailableLlmsPostResponses = {
     200: LlmModelInfo;
 };
 
-export type AddUpdateAvailableLlmApiV1ConfigAvailableLlmsPostResponse =
-    AddUpdateAvailableLlmApiV1ConfigAvailableLlmsPostResponses[keyof AddUpdateAvailableLlmApiV1ConfigAvailableLlmsPostResponses];
+export type AddUpdateAvailableLlmApiV1ConfigAvailableLlmsPostResponse = AddUpdateAvailableLlmApiV1ConfigAvailableLlmsPostResponses[keyof AddUpdateAvailableLlmApiV1ConfigAvailableLlmsPostResponses];
 
 export type DeleteAvailableLlmApiV1ConfigAvailableLlmsModelNameDeleteData = {
     body?: never;
@@ -1985,7 +2302,7 @@ export type DeleteAvailableLlmApiV1ConfigAvailableLlmsModelNameDeleteData = {
         model_name: string;
     };
     query?: never;
-    url: "/api/v1/config/available-llms/{model_name}";
+    url: '/api/v1/config/available-llms/{model_name}';
 };
 
 export type DeleteAvailableLlmApiV1ConfigAvailableLlmsModelNameDeleteErrors = {
@@ -2019,22 +2336,20 @@ export type DeleteAvailableLlmApiV1ConfigAvailableLlmsModelNameDeleteErrors = {
     502: ErrorResponseModel;
 };
 
-export type DeleteAvailableLlmApiV1ConfigAvailableLlmsModelNameDeleteError =
-    DeleteAvailableLlmApiV1ConfigAvailableLlmsModelNameDeleteErrors[keyof DeleteAvailableLlmApiV1ConfigAvailableLlmsModelNameDeleteErrors];
+export type DeleteAvailableLlmApiV1ConfigAvailableLlmsModelNameDeleteError = DeleteAvailableLlmApiV1ConfigAvailableLlmsModelNameDeleteErrors[keyof DeleteAvailableLlmApiV1ConfigAvailableLlmsModelNameDeleteErrors];
 
-export type DeleteAvailableLlmApiV1ConfigAvailableLlmsModelNameDeleteResponses =
-    {
-        /**
-         * Successful Response
-         */
-        200: unknown;
-    };
+export type DeleteAvailableLlmApiV1ConfigAvailableLlmsModelNameDeleteResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
 
 export type GetConfigsApiV1ConfigGetData = {
     body?: never;
     path?: never;
     query?: never;
-    url: "/api/v1/config/";
+    url: '/api/v1/config/';
 };
 
 export type GetConfigsApiV1ConfigGetErrors = {
@@ -2064,8 +2379,7 @@ export type GetConfigsApiV1ConfigGetErrors = {
     502: ErrorResponseModel;
 };
 
-export type GetConfigsApiV1ConfigGetError =
-    GetConfigsApiV1ConfigGetErrors[keyof GetConfigsApiV1ConfigGetErrors];
+export type GetConfigsApiV1ConfigGetError = GetConfigsApiV1ConfigGetErrors[keyof GetConfigsApiV1ConfigGetErrors];
 
 export type GetConfigsApiV1ConfigGetResponses = {
     /**
@@ -2074,14 +2388,13 @@ export type GetConfigsApiV1ConfigGetResponses = {
     200: Configs;
 };
 
-export type GetConfigsApiV1ConfigGetResponse =
-    GetConfigsApiV1ConfigGetResponses[keyof GetConfigsApiV1ConfigGetResponses];
+export type GetConfigsApiV1ConfigGetResponse = GetConfigsApiV1ConfigGetResponses[keyof GetConfigsApiV1ConfigGetResponses];
 
 export type UpdateConfigsApiV1ConfigPatchData = {
     body: ConfigsUpdate;
     path?: never;
     query?: never;
-    url: "/api/v1/config/";
+    url: '/api/v1/config/';
 };
 
 export type UpdateConfigsApiV1ConfigPatchErrors = {
@@ -2115,8 +2428,7 @@ export type UpdateConfigsApiV1ConfigPatchErrors = {
     502: ErrorResponseModel;
 };
 
-export type UpdateConfigsApiV1ConfigPatchError =
-    UpdateConfigsApiV1ConfigPatchErrors[keyof UpdateConfigsApiV1ConfigPatchErrors];
+export type UpdateConfigsApiV1ConfigPatchError = UpdateConfigsApiV1ConfigPatchErrors[keyof UpdateConfigsApiV1ConfigPatchErrors];
 
 export type UpdateConfigsApiV1ConfigPatchResponses = {
     /**
@@ -2125,8 +2437,7 @@ export type UpdateConfigsApiV1ConfigPatchResponses = {
     200: Configs;
 };
 
-export type UpdateConfigsApiV1ConfigPatchResponse =
-    UpdateConfigsApiV1ConfigPatchResponses[keyof UpdateConfigsApiV1ConfigPatchResponses];
+export type UpdateConfigsApiV1ConfigPatchResponse = UpdateConfigsApiV1ConfigPatchResponses[keyof UpdateConfigsApiV1ConfigPatchResponses];
 
 export type WebhookApiV1WebhooksBotUserIdPostData = {
     body?: never;
@@ -2137,7 +2448,7 @@ export type WebhookApiV1WebhooksBotUserIdPostData = {
         bot_user_id: number;
     };
     query?: never;
-    url: "/api/v1/webhooks/{bot_user_id}";
+    url: '/api/v1/webhooks/{bot_user_id}';
 };
 
 export type WebhookApiV1WebhooksBotUserIdPostErrors = {
@@ -2171,8 +2482,7 @@ export type WebhookApiV1WebhooksBotUserIdPostErrors = {
     502: ErrorResponseModel;
 };
 
-export type WebhookApiV1WebhooksBotUserIdPostError =
-    WebhookApiV1WebhooksBotUserIdPostErrors[keyof WebhookApiV1WebhooksBotUserIdPostErrors];
+export type WebhookApiV1WebhooksBotUserIdPostError = WebhookApiV1WebhooksBotUserIdPostErrors[keyof WebhookApiV1WebhooksBotUserIdPostErrors];
 
 export type WebhookApiV1WebhooksBotUserIdPostResponses = {
     /**

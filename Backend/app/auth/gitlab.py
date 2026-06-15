@@ -4,12 +4,31 @@ import base64
 import os
 import hashlib
 
-from app.core.config import settings
+from fastapi import HTTPException, status
+from pymongo.database import Database
+
+from app.services.app_settings_service import get_app_settings, is_gitlab_configured
 
 
 class GitlabAuthService:
-    def __init__(self):
-        self.base_url = settings.gitlab.base
+    def __init__(self, base: str, client_id: str, client_secret: str):
+        self.base_url = base
+        self.client_id = client_id
+        self.client_secret = client_secret
+
+    @classmethod
+    def from_db(cls, db: Database) -> "GitlabAuthService":
+        """Build the service from the DB-stored GitLab settings.
+
+        Raises 503 when GitLab has not been configured in the /admin panel yet.
+        """
+        if not is_gitlab_configured(db):
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="GitLab is not configured by the administrator",
+            )
+        s = get_app_settings(db)
+        return cls(s.gitlab_base, s.gitlab_client_id, s.gitlab_client_secret)
 
     # --- PKCE + state helpers ---
     @staticmethod
@@ -35,7 +54,7 @@ class GitlabAuthService:
         scope: Optional[str] = None,
     ) -> str:
         params = {
-            "client_id": settings.gitlab.client_id,
+            "client_id": self.client_id,
             "redirect_uri": redirect_uri,
             "response_type": "code",
             "state": state,
@@ -56,8 +75,8 @@ class GitlabAuthService:
         code_verifier: str,
     ) -> dict:
         data = {
-            "client_id": settings.gitlab.client_id,
-            "client_secret": settings.gitlab.client_secret,
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
             "code": code,
             "grant_type": "authorization_code",
             "redirect_uri": redirect_uri,
@@ -71,8 +90,8 @@ class GitlabAuthService:
         self, client: httpx.AsyncClient, refresh_token: str
     ) -> dict:
         data = {
-            "client_id": settings.gitlab.client_id,
-            "client_secret": settings.gitlab.client_secret,
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
             "grant_type": "refresh_token",
             "refresh_token": refresh_token,
         }
@@ -84,8 +103,8 @@ class GitlabAuthService:
         self, client: httpx.AsyncClient, token: str, hint: str = "refresh_token"
     ) -> None:
         data = {
-            "client_id": settings.gitlab.client_id,
-            "client_secret": settings.gitlab.client_secret,
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
             "token": token,
             "token_type_hint": hint,
         }

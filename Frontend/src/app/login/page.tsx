@@ -1,15 +1,16 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Suspense, useEffect, useState } from "react";
 import { gitlabLoginApiV1AuthGitlabLoginGet } from "@/client/sdk.gen";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { isAuthenticated } from "@/lib/auth";
 
 function LoginContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const [loginError, setLoginError] = useState<string | null>(null);
 
     useEffect(() => {
         // Check if user is already authenticated
@@ -24,17 +25,23 @@ function LoginContent() {
     }, [router, searchParams]);
 
     const handleGitlabSignIn = async () => {
-        console.log("GitLab sign-in initiated");
-        const { data, error } = await gitlabLoginApiV1AuthGitlabLoginGet();
-        console.log("Redirecting to GitLab for authentication...");
+        setLoginError(null);
+        const { data, error, response } =
+            await gitlabLoginApiV1AuthGitlabLoginGet();
         if (error) {
-            console.error("Error during GitLab login:", error);
+            if (response?.status === 503) {
+                setLoginError(
+                    "GitLab sign-in isn't configured yet — contact your administrator.",
+                );
+            } else {
+                setLoginError("Could not start GitLab sign-in. Try again.");
+            }
             return;
         }
         if (data && data.url) {
             window.location.href = data.url;
         } else {
-            console.error("No URL received for GitLab login");
+            setLoginError("No sign-in URL received. Try again.");
         }
     };
 
@@ -63,6 +70,11 @@ function LoginContent() {
                         </svg>
                         Sign in with GitLab
                     </Button>
+                    {loginError && (
+                        <p className="mt-3 text-sm text-destructive">
+                            {loginError}
+                        </p>
+                    )}
                 </CardContent>
             </Card>
         </div>

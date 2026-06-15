@@ -15,9 +15,12 @@ class MongoDBSettings(BaseModel):
 
 
 class GitlabSettings(BaseModel):
-    base: str
-    client_id: str
-    client_secret: str
+    # All optional: the authoritative values live in the `app_settings` DB
+    # collection (editable in the /admin panel). These env vars only seed the
+    # DB once on first startup. See app/db/database.py:init_db.
+    base: str | None = None
+    client_id: str | None = None
+    client_secret: str | None = None
     webhook_ssl_verify: bool = True
 
 
@@ -26,7 +29,7 @@ class Settings(BaseSettings):
 
     # --- grouped sub-settings ---
     mongodb: MongoDBSettings
-    gitlab: GitlabSettings
+    gitlab: GitlabSettings = GitlabSettings()
 
     # --- individual settings ---
     project_name: str = "Gitlab Agent"
@@ -52,10 +55,10 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 30
     refresh_token_expire_days: int = 7
 
-    ## Admin User
-    admin_username: str
-    admin_email: str
-    admin_password: str
+    ## Admin User — seed defaults for the `make create-admin` script (not required to boot)
+    admin_username: str | None = None
+    admin_email: str | None = None
+    admin_password: str | None = None
 
     ## External services
     openrouter_api_base: str = "https://openrouter.ai"

@@ -14,6 +14,7 @@ from app.core.config import settings
 from app.core.log import logger
 from app.db.models import Bot
 from app.agents.command_agent import CommandAgent
+from app.services.app_settings_service import get_app_settings
 
 
 async def handle_merge_request_event(
@@ -71,7 +72,7 @@ async def handle_merge_request_event(
 
     # Create GitLab client
     gitlab_client = gitlab.Gitlab(
-        settings.gitlab.base,
+        get_app_settings(mongo_db).gitlab_base,
         private_token=bot.gitlab_access_token,
     )
 
@@ -142,7 +143,7 @@ async def handle_note_event(
         return
 
     gitlab_client = gitlab.Gitlab(
-        settings.gitlab.base,
+        get_app_settings(mongo_db).gitlab_base,
         private_token=bot.gitlab_access_token,
     )
 

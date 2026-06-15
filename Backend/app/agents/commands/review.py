@@ -298,7 +298,7 @@ class ReviewCommand(CommandInterface):
                     if project_path:
                         try:
                             reference_link = get_line_link(
-                                settings.gitlab.base,
+                                self.gitlab_client.url,
                                 project_path,
                                 source_branch,
                                 relevant_file,

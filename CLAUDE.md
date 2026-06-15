@@ -37,6 +37,9 @@ docker compose -f docker/docker-compose-all.yml up            # prod: + frontend
 ```
 Copy `.env.sample` → `.env` first (in the repo root); both services read it. The same `.env` drives `core/config.py` (backend) and `NEXT_PUBLIC_BACKEND_URL` (frontend).
 
+### Admin user
+`make create-admin` creates/updates the admin who signs into the `/admin` panel (requires MongoDB running). It defaults to `ADMIN_USERNAME/ADMIN_EMAIL/ADMIN_PASSWORD` from `.env`, or override with `make create-admin ARGS="--username … --email … --password …"`. It's idempotent (matches by email; re-run to reset a password). Backed by `Backend/scripts/create_admin.py`.
+
 ## Architecture
 
 ### Request → agent flow
@@ -59,18 +62,24 @@ Prompt templates live in `app/prompts/` (Jinja2 `system_template`/`user_template
 Models go through OpenRouter (`OpenRouterProvider` + `OpenAIChatModel`). Per-bot settings (`llm_model`, `llm_temperature`, `llm_max_output_tokens`, `llm_additional_kwargs`, `llm_system_prompt`) live on the `Bot` document. The catalog of selectable models and their defaults is seeded from `app/core/llm_configs.py` (`LLMModelInfo` list) and editable at runtime via `/api/v1/config/available-llms`.
 
 ### Configuration layering
-`app/core/config.py` (`Settings`, pydantic-settings) reads env vars with **nested delimiter `_`, max split 1** — so `MONGODB_HOST`, `GITLAB_CLIENT_ID`, etc. map onto the `mongodb` / `gitlab` sub-models. Runtime-overridable values live in the Mongo `configs` collection (`Configs` model), which `init_db()` **resets to defaults on every startup**.
+`app/core/config.py` (`Settings`, pydantic-settings) reads env vars with **nested delimiter `_`, max split 1** — so `MONGODB_HOST`, `GITLAB_CLIENT_ID`, etc. map onto the `mongodb` / `gitlab` sub-models. There are **two** DB-backed config collections with opposite lifecycles:
+- `configs` (`Configs` model) — runtime-overridable agent/LLM settings, **reset to defaults on every startup** by `init_db()`.
+- `app_settings` (`AppSettings` model) — the GitLab OAuth credentials (`gitlab_base`, `gitlab_client_id`, `gitlab_client_secret`, `gitlab_webhook_ssl_verify`), edited in the `/admin` panel. **Seeded once** from env on first startup, then never reset (DB is authoritative). `GITLAB_*` env vars and the `Settings.gitlab` fields are therefore all optional — the app boots fine unconfigured. Read/written via `app/services/app_settings_service.py` (`get_app_settings`, `is_gitlab_configured`). Until GitLab is configured, user OAuth login returns **503**.
 
 ### Persistence — MongoDB only
-Despite a stray `data/database.db`, the app uses MongoDB exclusively (`app/db/database.py`). A module-global client is lazily created; `init_db()` (called in the FastAPI lifespan) creates indexes and seeds config. Models in `app/db/models.py` subclass `MongoModel` and convert via `to_document()` / `from_document()`. Human-readable integer IDs come from `get_next_sequence()` (an atomic counter collection), separate from Mongo `_id`. Key collections: `users`, `bots`, `oauth_accounts`, `refresh_sessions`, `mr_agent_history`, `configs`, `cache`, `counters`.
+Despite a stray `data/database.db`, the app uses MongoDB exclusively (`app/db/database.py`). A module-global client is lazily created; `init_db()` (called in the FastAPI lifespan) creates indexes and seeds config. Models in `app/db/models.py` subclass `MongoModel` and convert via `to_document()` / `from_document()`. Human-readable integer IDs come from `get_next_sequence()` (an atomic counter collection), separate from Mongo `_id`. Key collections: `users`, `bots`, `oauth_accounts`, `refresh_sessions`, `mr_agent_history`, `configs`, `app_settings`, `cache`, `counters`.
 
 ### Auth
-Two distinct credential systems:
-- **App users** authenticate with JWTs (`app/auth/jwt.py`); `get_current_user` validates the token *and* checks a live `refresh_sessions` record (revocable sessions).
-- **GitLab access** is per-user OAuth (`app/auth/gitlab.py`); `get_gitlab_client` (in `app/api/deps.py`) transparently refreshes expired OAuth tokens and persists them. Bots, by contrast, act via their own stored GitLab **project access token**, not user OAuth.
+Three credential paths:
+- **App users** authenticate with JWTs (`app/auth/jwt.py`); `get_current_user` validates the token *and* checks a live `refresh_sessions` record (revocable sessions). User accounts are created lazily on GitLab OAuth callback.
+- **Admins** use a **separate realm**: username/password login at `POST /api/v1/admin/login` (`app/api/routes/admin.py`). Passwords are bcrypt-hashed (`app/auth/password.py`, using the `bcrypt` lib directly — passlib is incompatible with bcrypt 5.x), stored as `Users.password_hash`; admin accounts are superusers seeded by `make create-admin`. Admin JWTs carry an `is_admin` claim and are guarded by `get_current_admin` (claim + `is_superuser`, else 403). This realm is independent of GitLab OAuth so it works *before* GitLab is configured. The `/admin` routes also expose `GET/PATCH /admin/settings/gitlab` (secret masked on read, blank secret preserved on write).
+- **GitLab access** is per-user OAuth (`app/auth/gitlab.py`); `GitlabAuthService.from_db(db)` loads credentials from `app_settings` (raises 503 if unconfigured). `get_gitlab_client` (in `app/api/deps.py`) transparently refreshes expired OAuth tokens and persists them. Bots, by contrast, act via their own stored GitLab **project access token**, not user OAuth.
 
 ### Frontend ↔ backend contract
 `Frontend/src/client/` is fully generated by `@hey-api/openapi-ts` from `Frontend/openapi.json` — **do not hand-edit it**. When backend routes/schemas change, refresh `openapi.json` from the running backend (`/api/openapi.json`) and run `npm run generate-client`. Runtime client config (base URL, bearer auth) is wired in `Frontend/src/hey-api.ts`; `BACKEND_URL` comes from `NEXT_PUBLIC_BACKEND_URL` via `src/env.ts`.
+
+### Admin panel (frontend)
+The `/admin` pages (`src/app/admin/`) are a **separate auth realm** from the user dashboard: tokens live under their own `localStorage` keys via `src/lib/admin-auth/` (mirrors `src/lib/auth/`). The single global `auth` resolver in `hey-api.ts` picks the admin token when `window.location.pathname` starts with `/admin`, the user token otherwise. `src/app/admin/layout.tsx` guards with `AdminProtectedRoute` (redirects to `/admin/login`) and renders a data-driven tab nav (currently just the GitLab Settings tab — add tabs to the `ADMIN_TABS` array). The settings form lives at `src/app/admin/settings/gitlab/page.tsx`.
 
 ## Conventions
 - `token_counter` (`app/agents/utils.py`) is a deliberate approximation (`len(text)//4`), used to gate diff/file/context size against `max_tokens_per_*` settings — not exact tokenization.

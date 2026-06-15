@@ -160,6 +160,21 @@ class Users(MongoModel):
     avatar_url: str | None = None
     is_active: bool = True
     is_superuser: bool = False
+    password_hash: str | None = None
+
+
+@dataclass
+class AppSettings(MongoModel):
+    """Singleton document holding runtime-editable app-wide settings.
+
+    Unlike `Configs`, this collection is seeded once and never reset on startup,
+    so values changed via the /admin panel persist across restarts.
+    """
+
+    gitlab_base: str | None = None
+    gitlab_client_id: str | None = None
+    gitlab_client_secret: str | None = None
+    gitlab_webhook_ssl_verify: bool = True
 
 
 @dataclass

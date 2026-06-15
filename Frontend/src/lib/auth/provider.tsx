@@ -22,6 +22,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const pathname = usePathname();
 
     useEffect(() => {
+        // The /admin/* pages are a separate auth realm (see lib/admin-auth).
+        // The user-realm refresh loop must not run there, or it bounces an
+        // admin-only session to /login?redirect=/admin/... on its interval tick.
+        if (pathname.startsWith("/admin")) {
+            return;
+        }
+
         // Set up automatic token refresh
         const cleanup = setupTokenRefresh(
             () => {

@@ -9,7 +9,7 @@ from pymongo import MongoClient, ReturnDocument
 from pymongo.database import Database
 
 from app.core.config import settings
-from app.db.models import Configs
+from app.db.models import AppSettings, Configs
 
 _client: MongoClient | None = None
 
@@ -69,6 +69,18 @@ def init_db() -> None:
 
     default_configs = Configs()
     configs_collection.insert_one(default_configs.to_document())
+
+    # Seed app_settings ONCE (DB is authoritative thereafter — see /admin panel).
+    # Unlike configs, this is never wiped, so admin-edited values persist.
+    app_settings_collection = db["app_settings"]
+    if app_settings_collection.find_one({}) is None:
+        seeded = AppSettings(
+            gitlab_base=settings.gitlab.base,
+            gitlab_client_id=settings.gitlab.client_id,
+            gitlab_client_secret=settings.gitlab.client_secret,
+            gitlab_webhook_ssl_verify=settings.gitlab.webhook_ssl_verify,
+        )
+        app_settings_collection.insert_one(seeded.to_document())
 
 
 def get_next_sequence(collection_name: str) -> int:

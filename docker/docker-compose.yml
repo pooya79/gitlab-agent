@@ -1,5 +1,5 @@
 # Dev infra only. The backend (FastAPI) and frontend (Next.js) run locally —
-# see `make dev`. This compose just provides MongoDB.
+# see `make dev`. This compose provides MongoDB plus a mongo-express web UI.
 services:
   mongodb:
     image: mongo:latest
@@ -14,6 +14,24 @@ services:
     volumes:
       - mongo_data:/data/db
       - mongo_config:/data/configdb
+
+  # Web UI to browse MongoDB data at http://localhost:${MONGO_EXPRESS_OUT_PORT:-8081}
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    restart: unless-stopped
+    ports:
+      - "${MONGO_EXPRESS_OUT_PORT:-8081}:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_MONGODB_PORT: "27017"
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGODB_ROOT_USERNAME:-root}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGODB_ROOT_PASSWORD:-example}
+      ME_CONFIG_MONGODB_URL: mongodb://${MONGODB_ROOT_USERNAME:-root}:${MONGODB_ROOT_PASSWORD:-example}@mongodb:27017/
+      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USERNAME:-admin}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PASSWORD:-admin}
+    depends_on:
+      - mongodb
 
 volumes:
   mongo_data:

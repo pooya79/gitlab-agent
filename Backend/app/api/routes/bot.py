@@ -13,6 +13,7 @@ from app.core.log import logger
 from app.db.database import get_next_sequence
 from app.db.models import Bot, Configs, Users
 from app.core.time import parse_iso_datetime, utc_now
+from app.services.app_settings_service import get_app_settings
 from app.schemas.bot import (
     BotCreate,
     BotRead,
@@ -213,6 +214,8 @@ async def create_bot(
             detail="GitLab project not found or access denied",
         )
 
+    app_settings = get_app_settings(mongo_db)
+
     # Create project access token for the bot
     try:
         access_token_name = f"{data.name}"
@@ -233,7 +236,7 @@ async def create_bot(
     # Get username associated with the token
     try:
         access_token_gitlab_client = gitlab.Gitlab(
-            settings.gitlab.base,
+            app_settings.gitlab_base,
             private_token=project_token.token,
         )
         access_token_gitlab_client.auth()
@@ -265,7 +268,7 @@ async def create_bot(
                 "url": webhook_url,
                 "note_events": True,
                 "merge_requests_events": True,
-                "enable_ssl_verification": settings.gitlab.webhook_ssl_verify,
+                "enable_ssl_verification": app_settings.gitlab_webhook_ssl_verify,
                 "token": webhook_secret_token,
             }
         )
@@ -289,7 +292,7 @@ async def create_bot(
     try:
         avatar_name = settings.avatar_default_name
         avatar_url = _set_bot_avatar(
-            settings.gitlab.base, project_token.token, avatar_name
+            app_settings.gitlab_base, project_token.token, avatar_name
         )
         if avatar_url is None:
             avatar_name = None
@@ -562,7 +565,7 @@ async def update_bot(
     warning = None
     if data.avatar_name is not None:
         avatar_url = _set_bot_avatar(
-            settings.gitlab.base,
+            get_app_settings(mongo_db).gitlab_base,
             bot.gitlab_access_token,
             data.avatar_name,
         )

@@ -107,7 +107,7 @@ async def gitlab_login(request: Request, mongo_db: Database = Depends(get_mongo_
     Redirect to GitLab for authentication.
     """
     redirect_uri = settings.host_url + "/api/v1/auth/gitlab/callback"
-    gitlab_oauth = GitlabAuthService()
+    gitlab_oauth = GitlabAuthService.from_db(mongo_db)
     state = gitlab_oauth.new_state()
     code_verifier, code_challenge = gitlab_oauth.new_pkce()
 
@@ -155,7 +155,7 @@ async def gitlab_auth(code: str, state: str, mongo_db: Database = Depends(get_mo
     cache_service.delete(f"oauth_state:{state}")
 
     # Exchange code for token
-    gitlab_oauth = GitlabAuthService()
+    gitlab_oauth = GitlabAuthService.from_db(mongo_db)
     async with httpx.AsyncClient() as client:
         token_response = await gitlab_oauth.exchange_code_for_token(
             client=client,

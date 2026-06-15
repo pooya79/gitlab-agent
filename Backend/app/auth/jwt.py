@@ -8,12 +8,17 @@ from app.core.config import settings
 from app.core.time import utc_now
 
 
-def create_access_token(user_id: str, jti: str) -> str:
-    """Create a JWT access token."""
+def create_access_token(user_id: str, jti: str, is_admin: bool = False) -> str:
+    """Create a JWT access token.
+
+    Set ``is_admin=True`` to mint a token for the separate admin realm
+    (validated by ``get_current_admin``).
+    """
     now = utc_now()
     payload = {
         "sub": user_id,
         "jti": jti,
+        "is_admin": is_admin,
         "iat": now,
         "nbf": now,
         "exp": now + dt.timedelta(minutes=settings.access_token_expire_minutes),

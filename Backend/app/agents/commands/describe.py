@@ -149,7 +149,7 @@ class DescribeCommand(CommandInterface):
                     if project_path and branch and filename:
                         try:
                             link = get_line_link(
-                                settings.gitlab.base,
+                                self.gitlab_client.url,
                                 project_path,
                                 branch,
                                 filename,
