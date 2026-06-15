@@ -19,10 +19,10 @@ services:
 
   backend:
     build:
-      context: ./Backend
-      dockerfile: Dockerfile
+      context: ../Backend
+      dockerfile: ../docker/Backend.Dockerfile
     env_file:
-      - .env
+      - ../.env
     networks:
       - gitlab_agent_network
     extra_hosts:
@@ -54,8 +54,8 @@ services:
 
   frontend:
     build:
-      context: ./Frontend
-      dockerfile: Dockerfile
+      context: ../Frontend
+      dockerfile: ../docker/Frontend.Dockerfile
       args:
         - NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL:-/}
     networks:
