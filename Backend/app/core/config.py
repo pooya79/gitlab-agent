@@ -1,6 +1,6 @@
 from typing import Any
 
-from pydantic import model_validator, BaseModel
+from pydantic import Field, model_validator, BaseModel
 from pydantic_settings import SettingsConfigDict, BaseSettings
 
 
@@ -35,9 +35,17 @@ class Settings(BaseSettings):
     project_name: str = "Gitlab Agent"
     api_version: int = 1
 
-    host: str = "http://"
-    port: int = 8000
-    host_url: str
+    # Where uvicorn binds locally + the frontend's API base in `make dev`.
+    backend_host: str = Field(default="http://localhost", validation_alias="BACKEND_HOST")
+    backend_port: int = Field(default=8000, validation_alias="BACKEND_PORT")
+
+    # The PUBLIC URL at which GitLab reaches the backend — used to build the OAuth
+    # redirect_uri, the bot webhook URLs, and avatar URLs. This is the value GitLab
+    # must be able to reach over the network (a tunnel in dev, the real domain in
+    # prod). If left empty it falls back to the local bind address, which only
+    # works for OAuth on the same machine — never for webhooks.
+    # Explicit validation_alias keeps these out of `env_nested_delimiter="_"`.
+    host_url: str = Field(default="", validation_alias="PUBLIC_BACKEND_URL")
 
     frontend_url: str = "http://localhost:3000"
 
@@ -46,7 +54,7 @@ class Settings(BaseSettings):
     @model_validator(mode="after")
     def _fill_host_url(self):
         if not self.host_url:
-            object.__setattr__(self, "host_url", f"{self.host}:{self.port}")
+            object.__setattr__(self, "host_url", f"{self.backend_host}:{self.backend_port}")
         return self
 
     ## Security settings
