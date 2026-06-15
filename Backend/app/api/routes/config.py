@@ -1,8 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from pymongo.database import Database
 
+from app.api.deps import get_current_user
 from app.db.database import get_mongo_database
-from app.db.models import Configs as ConfigsModel, LLMModelInfo as LLMModelInfoModel
+from app.db.models import (
+    Configs as ConfigsModel,
+    LLMModelInfo as LLMModelInfoModel,
+    Users,
+)
 from app.schemas.config import (
     LLMModelInfo as LLMModelInfoSchema,
     ConfigsUpdate,
@@ -67,6 +72,7 @@ async def get_available_llms(mongo_db: Database = Depends(get_mongo_database)):
 def add_update_available_llm(
     llm_info: LLMModelInfoSchema,
     mongo_db: Database = Depends(get_mongo_database),
+    current_user: Users = Depends(get_current_user),
 ):
     """
     Add a new LLM model configuration to the available models. Or update an existing one.
@@ -107,6 +113,7 @@ def add_update_available_llm(
 def delete_available_llm(
     model_name: str,
     mongo_db: Database = Depends(get_mongo_database),
+    current_user: Users = Depends(get_current_user),
 ):
     """
     Delete an LLM model configuration from the available models.
@@ -193,6 +200,7 @@ def get_configs(mongo_db: Database = Depends(get_mongo_database)):
 def update_configs(
     updated_configs: ConfigsUpdate,
     mongo_db: Database = Depends(get_mongo_database),
+    current_user: Users = Depends(get_current_user),
 ):
     """
     Update the configuration settings.

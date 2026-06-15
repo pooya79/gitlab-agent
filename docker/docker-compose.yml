@@ -1,39 +1,6 @@
+# Dev infra only. The backend (FastAPI) and frontend (Next.js) run locally —
+# see `make dev`. This compose just provides MongoDB.
 services:
-  backend:
-    # Build the image from the Backend Dockerfile in ../docker
-    build:
-      context: ../Backend
-      dockerfile: ../docker/Backend.Dockerfile
-
-    # Host the FastAPI application on port 8000
-    ports:
-      - "8000:8000"
-    extra_hosts:
-      - "${HOST_VC_DOMAIN:-example.com}:${HOST_VC}"
-
-    develop:
-      # Create a `watch` configuration to update the app
-      # https://docs.docker.com/compose/file-watch/#compose-watch-versus-bind-mounts
-      watch:
-        # Sync the working directory with the `/app` directory in the container
-        - action: sync
-          path: ../Backend
-          target: /app
-          # Exclude the project virtual environment — it could be for a
-          # different platform in the container
-          ignore:
-            - .venv/
-
-        # Rebuild the image if dependencies change by checking uv.lock
-        - action: rebuild
-          path: ../Backend/uv.lock
-    env_file:
-      - ../.env
-    volumes:
-      - ../data:/data
-
-
-
   mongodb:
     image: mongo:latest
     container_name: mongodb
