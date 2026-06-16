@@ -1,6 +1,22 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+    createBotApiV1BotsPost,
+    createNewBotAccessTokenApiV1BotsBotIdNewAccessTokenPatch,
+    deleteBotApiV1BotsBotIdDelete,
+    getBotStatusApiV1BotsBotIdStatusGet,
+    listBotsApiV1BotsGet,
+    listGitlabProjectsApiV1GitlabProjectsGet,
+    toggleBotActiveApiV1BotsBotIdToggleActivePatch,
+} from "@/client/sdk.gen";
+import {
+    type Bot,
+    type BotStatus,
+    BotsTable,
+    type BotsTableHandle,
+} from "@/components/bots-table";
+import { CreateBotDialog } from "@/components/create-bot-dialog";
 import {
     Card,
     CardContent,
@@ -8,16 +24,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { BotsTable, type Bot, type BotStatus } from "@/components/bots-table";
-import { CreateBotDialog } from "@/components/create-bot-dialog";
-import {
-    listGitlabProjectsApiV1GitlabProjectsGet,
-    getBotStatusApiV1BotsBotIdStatusGet,
-    createBotApiV1BotsPost,
-    toggleBotActiveApiV1BotsBotIdToggleActivePatch,
-    createNewBotAccessTokenApiV1BotsBotIdNewAccessTokenPatch,
-    deleteBotApiV1BotsBotIdDelete,
-} from "@/client/sdk.gen";
+import { useToast } from "@/components/ui/toast";
 
 const ACCESS_LEVEL: Record<number, string> = {
     10: "Guest",
@@ -28,11 +35,57 @@ const ACCESS_LEVEL: Record<number, string> = {
 };
 
 export default function DashboardPage() {
+    const { toast } = useToast();
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
     const [selectedProjectPathName, setSelectedProjectPathName] = useState<
         string | null
     >(null);
-    const [refreshTrigger, setRefreshTrigger] = useState(0);
+    // Drives only the lightweight summary-card stats refetch. The bots table
+    // updates affected rows in place, so it is intentionally NOT tied to this.
+    const [statsRefreshTrigger, setStatsRefreshTrigger] = useState(0);
+    const [botStats, setBotStats] = useState<{
+        total: number;
+        active: number;
+        inactive: number;
+    } | null>(null);
+    const tableRef = useRef<BotsTableHandle>(null);
+
+    // Fetch real bot stats for the summary cards
+    useEffect(() => {
+        let isCancelled = false;
+
+        const loadStats = async () => {
+            try {
+                const response = await listBotsApiV1BotsGet();
+
+                if (response.error || response.response.status !== 200) {
+                    throw new Error("Failed to fetch bot stats");
+                }
+
+                const items = response.data.items ?? [];
+                const active = items.filter((bot) => bot.is_active).length;
+
+                if (!isCancelled) {
+                    setBotStats({
+                        total: response.data.total ?? items.length,
+                        active,
+                        inactive: items.length - active,
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching bot stats:", error);
+                if (!isCancelled) {
+                    setBotStats(null);
+                }
+            }
+        };
+
+        loadStats();
+
+        return () => {
+            isCancelled = true;
+        };
+    }, [statsRefreshTrigger]);
 
     const handleOpenCreateDialog = (projectPathName: string) => {
         setSelectedProjectPathName(projectPathName);
@@ -57,8 +110,19 @@ export default function DashboardPage() {
             );
         }
 
-        // Success - refresh the table
-        setRefreshTrigger((prev) => prev + 1);
+        // Patch just the affected project row in place instead of reloading.
+        tableRef.current?.applyBotCreated(projectPath, {
+            botId: response.data.bot.id,
+            botName,
+            avatar: response.data.bot.avatar_url ?? undefined,
+        });
+        setStatsRefreshTrigger((prev) => prev + 1);
+
+        toast({
+            variant: response.data.warning ? "warning" : "success",
+            title: `Bot "${botName}" created`,
+            description: response.data.warning ?? undefined,
+        });
     };
 
     // Fetch bots from API
@@ -123,7 +187,7 @@ export default function DashboardPage() {
                     : new Error("Unknown error while fetching bots");
             }
         },
-        [refreshTrigger],
+        [],
     );
 
     // Fetch bot status from API
@@ -162,8 +226,12 @@ export default function DashboardPage() {
         }
     };
 
-    // Mock handler for stopping/starting bot
-    const handleStopBot = async (botId: number, botName: string) => {
+    // Toggle a bot active/inactive. Returns false on failure so the table can
+    // skip its in-place status refresh.
+    const handleStopBot = async (
+        botId: number,
+        botName: string,
+    ): Promise<boolean> => {
         try {
             console.log(`Toggling bot status for: ${botName} (ID: ${botId})`);
 
@@ -183,24 +251,32 @@ export default function DashboardPage() {
             }
 
             const isActive = response.data.is_active;
-            alert(
-                `Bot "${botName}" is now ${isActive ? "active" : "inactive"}.`,
-            );
+            toast({
+                variant: "success",
+                title: `Bot "${botName}" ${isActive ? "activated" : "deactivated"}`,
+                description: `The bot is now ${isActive ? "active" : "inactive"}.`,
+            });
 
-            // Refresh the table to show updated status
-            setRefreshTrigger((prev) => prev + 1);
+            // Only the summary cards need a refresh; the table updates the row.
+            setStatsRefreshTrigger((prev) => prev + 1);
+            return true;
         } catch (error) {
             console.error(`Error toggling bot status for ${botName}:`, error);
-            alert(
-                `Failed to toggle bot status: ${
-                    error instanceof Error ? error.message : "Unknown error"
-                }`,
-            );
+            toast({
+                variant: "error",
+                title: "Failed to toggle bot status",
+                description:
+                    error instanceof Error ? error.message : "Unknown error",
+            });
+            return false;
         }
     };
 
-    // Mock handler for creating new token
-    const handleCreateNewToken = async (botId: number, botName: string) => {
+    // Issue a fresh access token for a bot. Returns false on failure.
+    const handleCreateNewToken = async (
+        botId: number,
+        botName: string,
+    ): Promise<boolean> => {
         try {
             console.log(`Creating new token for: ${botName} (ID: ${botId})`);
 
@@ -219,30 +295,33 @@ export default function DashboardPage() {
                 );
             }
 
-            if (response.data.warning) {
-                alert(
-                    `New token created for "${botName}"! The old token has been invalidated.\nWarning: ${response.data.warning}`,
-                );
-            } else {
-                alert(
-                    `New token created for "${botName}"! The old token has been invalidated.`,
-                );
-            }
+            toast({
+                variant: response.data.warning ? "warning" : "success",
+                title: `New token created for "${botName}"`,
+                description: response.data.warning
+                    ? `The old token has been invalidated.\nWarning: ${response.data.warning}`
+                    : "The old token has been invalidated.",
+            });
 
-            // Refresh the table
-            setRefreshTrigger((prev) => prev + 1);
+            setStatsRefreshTrigger((prev) => prev + 1);
+            return true;
         } catch (error) {
             console.error(`Error creating new token for ${botName}:`, error);
-            alert(
-                `Failed to create new token: ${
-                    error instanceof Error ? error.message : "Unknown error"
-                }`,
-            );
+            toast({
+                variant: "error",
+                title: "Failed to create new token",
+                description:
+                    error instanceof Error ? error.message : "Unknown error",
+            });
+            return false;
         }
     };
 
-    // Mock handler for removing bot
-    const handleRemoveBot = async (botId: number, botName: string) => {
+    // Delete a bot. Returns false on failure so the table keeps the row.
+    const handleRemoveBot = async (
+        botId: number,
+        botName: string,
+    ): Promise<boolean> => {
         try {
             console.log(`Removing bot: ${botName} (ID: ${botId})`);
             const response = await deleteBotApiV1BotsBotIdDelete({
@@ -259,23 +338,25 @@ export default function DashboardPage() {
                 );
             }
 
-            if (response.data.warning) {
-                alert(
-                    `Bot "${botName}" removed successfully! Warning: ${response.data.warning}`,
-                );
-            } else {
-                alert(`Bot "${botName}" removed successfully!`);
-            }
+            toast({
+                variant: response.data.warning ? "warning" : "success",
+                title: `Bot "${botName}" removed`,
+                description: response.data.warning
+                    ? `Warning: ${response.data.warning}`
+                    : undefined,
+            });
 
-            // Refresh the table to remove the deleted bot
-            setRefreshTrigger((prev) => prev + 1);
+            setStatsRefreshTrigger((prev) => prev + 1);
+            return true;
         } catch (error) {
             console.error(`Error removing bot ${botName}:`, error);
-            alert(
-                `Failed to remove bot: ${
-                    error instanceof Error ? error.message : "Unknown error"
-                }`,
-            );
+            toast({
+                variant: "error",
+                title: "Failed to remove bot",
+                description:
+                    error instanceof Error ? error.message : "Unknown error",
+            });
+            return false;
         }
     };
 
@@ -291,33 +372,37 @@ export default function DashboardPage() {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Projects</CardTitle>
-                        <CardDescription>
-                            Connected GitLab projects
-                        </CardDescription>
+                        <CardTitle>Total Bots</CardTitle>
+                        <CardDescription>AI bots configured</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-3xl font-bold">3</p>
+                        <p className="text-3xl font-bold">
+                            {botStats ? botStats.total : "—"}
+                        </p>
                     </CardContent>
                 </Card>
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Bots</CardTitle>
-                        <CardDescription>AI bots configured</CardDescription>
+                        <CardTitle>Active</CardTitle>
+                        <CardDescription>Currently running</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-3xl font-bold">5</p>
+                        <p className="text-3xl font-bold text-green-600">
+                            {botStats ? botStats.active : "—"}
+                        </p>
                     </CardContent>
                 </Card>
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Bots</CardTitle>
-                        <CardDescription>AI bots configured</CardDescription>
+                        <CardTitle>Inactive</CardTitle>
+                        <CardDescription>Stopped bots</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-3xl font-bold">3</p>
+                        <p className="text-3xl font-bold text-muted-foreground">
+                            {botStats ? botStats.inactive : "—"}
+                        </p>
                     </CardContent>
                 </Card>
             </div>
@@ -332,6 +417,7 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                     <BotsTable
+                        ref={tableRef}
                         fetchBots={fetchBots}
                         fetchBotStatus={fetchBotStatus}
                         onCreateBot={handleOpenCreateDialog}

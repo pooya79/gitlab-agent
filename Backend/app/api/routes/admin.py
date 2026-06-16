@@ -1,6 +1,6 @@
 import datetime as dt
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from pymongo.database import Database
 from pymongo.errors import DuplicateKeyError
 
@@ -10,7 +10,12 @@ from app.auth.password import verify_password
 from app.core.config import settings
 from app.core.time import utc_now
 from app.db.database import get_mongo_database, get_next_sequence
-from app.db.models import RefreshSession, Users
+from app.db.models import (
+    Configs as ConfigsModel,
+    LLMModelInfo as LLMModelInfoModel,
+    RefreshSession,
+    Users,
+)
 from app.schemas.admin import (
     AdminInfo,
     AdminLoginIn,
@@ -19,6 +24,7 @@ from app.schemas.admin import (
     GitlabSettingsUpdate,
 )
 from app.schemas.auth import RefreshTokenIn
+from app.schemas.config import LLMModelInfo as LLMModelInfoSchema
 from app.services.app_settings_service import get_app_settings, update_gitlab_settings
 
 router = APIRouter(prefix="/admin", tags=["admin"])
@@ -156,3 +162,75 @@ def patch_gitlab_settings(
         gitlab_client_secret_set=bool(s.gitlab_client_secret),
         gitlab_webhook_ssl_verify=s.gitlab_webhook_ssl_verify,
     )
+
+
+def _load_configs(mongo_db: Database) -> ConfigsModel:
+    """Load the singleton Configs document or fail with a 500."""
+    configs_doc = mongo_db["configs"].find_one({})
+    configs_obj = ConfigsModel.from_document(configs_doc) if configs_doc else None
+    if not configs_obj:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Could not fetch LLM model configurations.",
+        )
+    return configs_obj
+
+
+def _persist_available_llms(mongo_db: Database, configs_obj: ConfigsModel) -> None:
+    mongo_db["configs"].update_one(
+        {"_id": configs_obj._id},
+        {
+            "$set": {
+                "available_llms": {
+                    name: info.to_document()
+                    for name, info in configs_obj.available_llms.items()
+                }
+            }
+        },
+    )
+
+
+@router.get("/settings/llms", response_model=dict[str, LLMModelInfoSchema])
+def list_llm_configs(
+    mongo_db: Database = Depends(get_mongo_database),
+    admin: Users = Depends(get_current_admin),
+):
+    """List the available LLM model configurations (admin)."""
+    configs_obj = _load_configs(mongo_db)
+    return {
+        name: LLMModelInfoSchema.model_validate(info, from_attributes=True)
+        for name, info in configs_obj.available_llms.items()
+    }
+
+
+@router.post("/settings/llms", response_model=LLMModelInfoSchema)
+def add_update_llm_config(
+    llm_info: LLMModelInfoSchema,
+    mongo_db: Database = Depends(get_mongo_database),
+    admin: Users = Depends(get_current_admin),
+):
+    """Add a new LLM model configuration or update an existing one (admin)."""
+    configs_obj = _load_configs(mongo_db)
+    configs_obj.available_llms[llm_info.model_name] = LLMModelInfoModel(
+        **llm_info.model_dump()
+    )
+    _persist_available_llms(mongo_db, configs_obj)
+    return llm_info
+
+
+@router.delete("/settings/llms/{model_name:path}")
+def delete_llm_config(
+    model_name: str,
+    mongo_db: Database = Depends(get_mongo_database),
+    admin: Users = Depends(get_current_admin),
+):
+    """Delete an LLM model configuration (admin)."""
+    configs_obj = _load_configs(mongo_db)
+    if model_name not in configs_obj.available_llms:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"LLM model '{model_name}' not found in available models.",
+        )
+    del configs_obj.available_llms[model_name]
+    _persist_available_llms(mongo_db, configs_obj)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

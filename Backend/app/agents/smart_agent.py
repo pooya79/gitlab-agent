@@ -1,5 +1,4 @@
 import gitlab
-import requests
 import datetime as dt
 from pydantic_ai import (
     Agent,
@@ -82,6 +81,7 @@ class SmartAgent:
     ):
         temperature = bot.llm_temperature
         max_tokens = bot.llm_max_output_tokens
+        top_p = bot.llm_top_p
         model_name = bot.llm_model
         extra_body = (
             bot.llm_additional_kwargs.copy() if bot.llm_additional_kwargs else {}
@@ -94,6 +94,7 @@ class SmartAgent:
         self.model_settings = OpenAIChatModelSettings(
             temperature=temperature,
             max_tokens=max_tokens,
+            top_p=top_p,
             extra_body=extra_body,
         )
         self.model = OpenAIChatModel(
@@ -104,7 +105,6 @@ class SmartAgent:
         self.gitlab_client = gitlab_client
         self.mongo_db = mongo_db
         self.bot = bot
-        self.openrouter_api_key = openrouter_api_key
 
     def gather_context(self, mr: "gitlab.v4.objects.ProjectMergeRequest") -> str:
         """Gather context for the merge request including diffs, title, and description."""
@@ -373,14 +373,6 @@ class SmartAgent:
             {"_id": document_id},
             {"$set": update_fields},
         )
-
-    def _get_openrouter_cost(self, provider_response_id: str):
-        url = "https://openrouter.ai/api/v1/generation"
-
-        querystring = {"id": provider_response_id}
-        headers = {"Authorization": f"Bearer {self.openrouter_api_key}"}
-        response = requests.get(url, headers=headers, params=querystring)
-        print(response.json())
 
     @staticmethod
     def get_history(

@@ -49,6 +49,10 @@ class LLMModelInfo(MongoModel):
     context_window: int = 0
     max_output_tokens: int = 0
     temperature: float = 0.2
+    top_p: float = 0.95
+    # Costs are per 1M tokens, in whatever currency the operator tracks (USD by convention).
+    input_token_cost: float = 0.0
+    output_token_cost: float = 0.0
     additional_kwargs_schema: dict[str, Any] = field(default_factory=dict)
 
 
@@ -104,6 +108,7 @@ class Bot(MongoModel):
     llm_context_window: int = 0
     llm_max_output_tokens: int = 0
     llm_temperature: float = 0.0
+    llm_top_p: float = 0.95
     llm_additional_kwargs: dict[str, Any] = field(default_factory=dict)
     llm_system_prompt: str = SMART_AGENT_SYSTEM_PROMPT
 

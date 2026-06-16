@@ -23,6 +23,7 @@ class BotRead(BaseModel):
     llm_model: str
     llm_max_output_tokens: int
     llm_temperature: float
+    llm_top_p: float = 0.95
     llm_system_prompt: Optional[str] = None
     llm_additional_kwargs: Optional[Dict[str, Any]] = None
 

@@ -16,6 +16,7 @@ import {
 // Tabs are intentionally data-driven so more admin sections can be added later.
 const ADMIN_TABS = [
     { href: "/admin/settings/gitlab", label: "GitLab Settings" },
+    { href: "/admin/settings/llms", label: "LLM Models" },
 ];
 
 function AdminChrome({ children }: { children: React.ReactNode }) {

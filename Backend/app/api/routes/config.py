@@ -1,11 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from pymongo.database import Database
 
 from app.api.deps import get_current_user
 from app.db.database import get_mongo_database
 from app.db.models import (
     Configs as ConfigsModel,
-    LLMModelInfo as LLMModelInfoModel,
     Users,
 )
 from app.schemas.config import (
@@ -58,6 +57,9 @@ async def get_available_llms(mongo_db: Database = Depends(get_mongo_database)):
                     context_window=llm_info.context_window,
                     max_output_tokens=llm_info.max_output_tokens,
                     temperature=llm_info.temperature,
+                    top_p=llm_info.top_p,
+                    input_token_cost=llm_info.input_token_cost,
+                    output_token_cost=llm_info.output_token_cost,
                     additional_kwargs_schema=llm_info.additional_kwargs_schema,
                 )
     else:
@@ -66,95 +68,6 @@ async def get_available_llms(mongo_db: Database = Depends(get_mongo_database)):
             detail="Could not fetch available LLM model configurations.",
         )
     return available_llms
-
-
-@router.post("/available-llms", response_model=LLMModelInfoSchema)
-def add_update_available_llm(
-    llm_info: LLMModelInfoSchema,
-    mongo_db: Database = Depends(get_mongo_database),
-    current_user: Users = Depends(get_current_user),
-):
-    """
-    Add a new LLM model configuration to the available models. Or update an existing one.
-    """
-    configs_collection = mongo_db["configs"]
-    configs_doc = configs_collection.find_one({})
-    if not configs_doc:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Could not fetch available LLM model configurations.",
-        )
-
-    configs_obj = ConfigsModel.from_document(configs_doc)
-    if not configs_obj:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Could not parse existing LLM model configurations.",
-        )
-
-    configs_obj.available_llms[llm_info.model_name] = llm_info
-
-    configs_collection.update_one(
-        {"_id": configs_obj._id},
-        {
-            "$set": {
-                "available_llms": {
-                    model_name: info.to_document()
-                    for model_name, info in configs_obj.available_llms.items()
-                }
-            }
-        },
-    )
-
-    return llm_info
-
-
-@router.delete("/available-llms/{model_name}")
-def delete_available_llm(
-    model_name: str,
-    mongo_db: Database = Depends(get_mongo_database),
-    current_user: Users = Depends(get_current_user),
-):
-    """
-    Delete an LLM model configuration from the available models.
-    """
-    configs_collection = mongo_db["configs"]
-    configs_doc = configs_collection.find_one({})
-    if not configs_doc:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Could not fetch available LLM model configurations.",
-        )
-
-    configs_obj = ConfigsModel.from_document(configs_doc)
-    if not configs_obj:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Could not parse existing LLM model configurations.",
-        )
-
-    if model_name not in configs_obj.available_llms:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"LLM model '{model_name}' not found in available models.",
-        )
-
-    del configs_obj.available_llms[model_name]
-
-    configs_collection.update_one(
-        {"_id": configs_obj._id},
-        {
-            "$set": {
-                "available_llms": {
-                    model_name: info.to_document()
-                    for model_name, info in configs_obj.available_llms.items()
-                }
-            }
-        },
-    )
-
-    # Return no content response
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.get("/", response_model=ConfigsSchema)
@@ -189,6 +102,9 @@ def get_configs(mongo_db: Database = Depends(get_mongo_database)):
                 context_window=llm_info.context_window,
                 max_output_tokens=llm_info.max_output_tokens,
                 temperature=llm_info.temperature,
+                top_p=llm_info.top_p,
+                input_token_cost=llm_info.input_token_cost,
+                output_token_cost=llm_info.output_token_cost,
                 additional_kwargs_schema=llm_info.additional_kwargs_schema,
             )
             for model_name, llm_info in configs_obj.available_llms.items()

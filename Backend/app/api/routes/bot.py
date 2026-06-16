@@ -336,6 +336,7 @@ async def create_bot(
             llm_context_window=llm_info.context_window,
             llm_max_output_tokens=llm_info.max_output_tokens,
             llm_temperature=llm_info.temperature,
+            llm_top_p=llm_info.top_p,
             llm_additional_kwargs=llm_info.additional_kwargs_schema,
             avatar_name=avatar_name,
             avatar_url=avatar_url,
@@ -591,6 +592,7 @@ async def update_bot(
                     bot.llm_context_window = llm_info.context_window
                     bot.llm_max_output_tokens = llm_info.max_output_tokens
                     bot.llm_temperature = llm_info.temperature
+                    bot.llm_top_p = llm_info.top_p
                     bot.llm_additional_kwargs = llm_info.additional_kwargs_schema
                 else:
                     raise HTTPException(

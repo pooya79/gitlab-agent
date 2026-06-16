@@ -7,6 +7,10 @@ class LLMModelInfo(BaseModel):
     context_window: int
     max_output_tokens: int
     temperature: float
+    top_p: float = 0.95
+    # Per 1M tokens.
+    input_token_cost: float = 0.0
+    output_token_cost: float = 0.0
     additional_kwargs_schema: dict[str, Any] = Field(default_factory=dict)
 
 class Configs(BaseModel):

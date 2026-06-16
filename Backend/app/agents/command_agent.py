@@ -38,6 +38,7 @@ class CommandAgent:
     ):
         temperature = bot.llm_temperature
         max_tokens = bot.llm_max_output_tokens
+        top_p = bot.llm_top_p
         model_name = bot.llm_model
         extra_body = (
             bot.llm_additional_kwargs.copy() if bot.llm_additional_kwargs else {}
@@ -50,6 +51,7 @@ class CommandAgent:
         self.model_settings = OpenAIChatModelSettings(
             temperature=temperature,
             max_tokens=max_tokens,
+            top_p=top_p,
             extra_body=extra_body,
         )
         self.model = OpenAIChatModel(
